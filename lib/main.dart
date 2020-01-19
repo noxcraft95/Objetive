@@ -92,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
-            title: Text('Hoy'),
+            title: Text('Tareas de hoy'),
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.business),
