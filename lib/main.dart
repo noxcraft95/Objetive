@@ -2,7 +2,19 @@ import 'package:flutter/material.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+  int _selectedIndex = 0;
+  static const TextStyle estiloBottonBar = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text(
+      'Index 0: Hoy',
+      style: estiloBottonBar,
+    ),
+    Text(
+      'Index 1: Calendario',
+      style: estiloBottonBar,
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,17 +37,24 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
+  int _selectedIndex = 0;
   List<bool> inputs = new List<bool>();
   @override
   void initState() {
-    // TODO: implement initState
+    // TODO: Habrá que traerse de base de datos todos los eventos de "hoy"
+    // TODO: y cargar los checkbox de "cumplido"
+
     setState(() {
-      for(int i=0;i<20;i++){
-        inputs.add(true);
+      for(int i=0;i<10;i++){
+        inputs.add(false);
       }
     });
   }
-
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
   void ItemChange(bool val,int index){
     setState(() {
       inputs[index] = val;
@@ -58,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   children: <Widget>[
                     new CheckboxListTile(
                         value: inputs[index],
-                        title: new Text('item ${index}'),
+                        title: new Text('Objetivo ${index}'),
                         controlAffinity: ListTileControlAffinity.leading,
                         onChanged:(bool val){ItemChange(val, index);}
                     )
@@ -68,6 +87,28 @@ class _MyHomePageState extends State<MyHomePage> {
             );
 
           }
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            title: Text('Hoy'),
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            title: Text('Calendario'),
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        selectedItemColor: Colors.amber[800],
+        onTap: _onItemTapped,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Add your onPressed code here!
+        },
+        child: Icon(Icons.add),
+        backgroundColor: Colors.green,
       ),
     );
   }
