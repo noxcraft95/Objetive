@@ -37,7 +37,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   List<bool> inputs = new List<bool>();
   @override
   void initState() {
@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // TODO: y cargar los checkbox de "cumplido"
 
     setState(() {
-      for(int i=0;i<10;i++){
+      for(int i=0;i<3;i++){
         inputs.add(false);
       }
     });
@@ -75,13 +75,13 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: new EdgeInsets.all(10.0),
                 child: new Column(
                   children: <Widget>[
-                    new CheckboxListTile(
-                        value: inputs[index],
-                        title: new Text('Objetivo ${index}'),
-                        controlAffinity: ListTileControlAffinity.leading,
-                        onChanged:(bool val){ItemChange(val, index);}
-                    )
-                  ],
+                  new CheckboxListTile(
+                      value: inputs[index],
+                      title: new Text('Objetivo ${index}'),
+                      controlAffinity: ListTileControlAffinity.leading,
+                      onChanged:(bool val){ItemChange(val, index);}
+                  )
+                ],
                 ),
               ),
             );
