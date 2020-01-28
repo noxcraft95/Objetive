@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:objetive/crear_objetivo.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -51,9 +52,9 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CrearObjetivo()));
   }
   void ItemChange(bool val,int index){
     setState(() {
@@ -79,8 +80,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       value: inputs[index],
                       title: new Text('Objetivo ${index}'),
                       controlAffinity: ListTileControlAffinity.leading,
-                      onChanged:(bool val){ItemChange(val, index);}
-                  )
+                      onChanged:(bool val){_onItemTapped(index);}
+                  ),
                 ],
                 ),
               ),
@@ -88,24 +89,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
           }
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            title: Text('Tareas de hoy'),
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            title: Text('Calendario'),
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
-      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Add your onPressed code here!
+          Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => CrearObjetivo()));
         },
         child: Icon(Icons.add),
         backgroundColor: Colors.green,
