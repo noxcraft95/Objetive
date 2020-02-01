@@ -43,13 +43,13 @@ class _StepperBodyState extends State<StepperBody> {
 
   @override
   void dispose() {
-    _focusNode.dispose();
+    //_focusNode.dispose();  //Error al abrir crear objetivo dos veces, se comenta.
     super.dispose();
   }
 
   List<Step> steps = [
     new Step(
-        title: const Text('Name'),
+        title: const Text('Objetivo'),
         //subtitle: const Text('Enter your name'),
         isActive: true,
         //state: StepState.error,
@@ -65,29 +65,29 @@ class _StepperBodyState extends State<StepperBody> {
           //initialValue: 'Aseem Wangoo',
           validator: (value) {
             if (value.isEmpty || value.length < 1) {
-              return 'Please enter name';
+              return 'Introduzca el objetivo';
             }
           },
           decoration: new InputDecoration(
-              labelText: 'Enter your name',
-              hintText: 'Enter a name',
+              labelText: 'Nombre del objetivo',
+              hintText: 'Nombre del objetivo',
               //filled: true,
-              icon: const Icon(Icons.person),
+              icon: const Icon(Icons.forward),
               labelStyle:
               new TextStyle(decorationStyle: TextDecorationStyle.solid)),
         )),
     new Step(
-        title: const Text('Phone'),
+        title: const Text('Descripción'),
         //subtitle: const Text('Subtitle'),
         isActive: true,
         //state: StepState.editing,
         state: StepState.indexed,
         content: new TextFormField(
-          keyboardType: TextInputType.phone,
+          keyboardType: TextInputType.text,
           autocorrect: false,
           validator: (value) {
-            if (value.isEmpty || value.length < 10) {
-              return 'Please enter valid number';
+            if (value.isEmpty || value.length < 1) {
+              return 'Introduzca una descripción';
             }
           },
           onSaved: (String value) {
@@ -95,24 +95,24 @@ class _StepperBodyState extends State<StepperBody> {
           },
           maxLines: 1,
           decoration: new InputDecoration(
-              labelText: 'Enter your number',
-              hintText: 'Enter a number',
-              icon: const Icon(Icons.phone),
+              labelText: 'Descripción del objetivo',
+              hintText: 'Introduzca una descripción',
+              icon: const Icon(Icons.add_comment),
               labelStyle:
               new TextStyle(decorationStyle: TextDecorationStyle.solid)),
         )),
     new Step(
-        title: const Text('Email'),
+        title: const Text('Fecha del objetivo'),
         // subtitle: const Text('Subtitle'),
         isActive: true,
         state: StepState.indexed,
         // state: StepState.disabled,
         content: new TextFormField(
-          keyboardType: TextInputType.emailAddress,
+          keyboardType: TextInputType.datetime,
           autocorrect: false,
           validator: (value) {
-            if (value.isEmpty || !value.contains('@')) {
-              return 'Please enter valid email';
+            if (value.isEmpty) {
+              return 'Seleccione una fecha';
             }
           },
           onSaved: (String value) {
@@ -120,9 +120,9 @@ class _StepperBodyState extends State<StepperBody> {
           },
           maxLines: 1,
           decoration: new InputDecoration(
-              labelText: 'Enter your email',
-              hintText: 'Enter a email address',
-              icon: const Icon(Icons.email),
+              labelText: 'Selecciona una fecha',
+              hintText: 'Fecha del objetivo',
+              icon: const Icon(Icons.date_range),
               labelStyle:
               new TextStyle(decorationStyle: TextDecorationStyle.solid)),
         )),
