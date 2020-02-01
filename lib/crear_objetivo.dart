@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class CrearObjetivo extends StatelessWidget {
+
+
   @override
   Widget build(BuildContext context) {
     return new MaterialApp(
@@ -16,9 +18,9 @@ class CrearObjetivo extends StatelessWidget {
   }
 }
 class MyData {
-  String name = '';
-  String phone = '';
-  String email = '';
+  String objetivo = '';
+  String descripcion = '';
+  String fecha = '';
 }
 
 class StepperBody extends StatefulWidget {
@@ -31,6 +33,20 @@ class _StepperBodyState extends State<StepperBody> {
   static var _focusNode = new FocusNode();
   GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   static MyData data = new MyData();
+
+
+   DateTime selectedDate = DateTime.now();
+
+   Future<Null> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: selectedDate);
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        selectedDate = picked;
+      });
+  }
 
   @override
   void initState() {
@@ -59,7 +75,7 @@ class _StepperBodyState extends State<StepperBody> {
           keyboardType: TextInputType.text,
           autocorrect: false,
           onSaved: (String value) {
-            data.name = value;
+            data.objetivo = value;
           },
           maxLines: 1,
           //initialValue: 'Aseem Wangoo',
@@ -91,7 +107,7 @@ class _StepperBodyState extends State<StepperBody> {
             }
           },
           onSaved: (String value) {
-            data.phone = value;
+            data.descripcion = value;
           },
           maxLines: 1,
           decoration: new InputDecoration(
@@ -107,7 +123,8 @@ class _StepperBodyState extends State<StepperBody> {
         isActive: true,
         state: StepState.indexed,
         // state: StepState.disabled,
-        content: new TextFormField(
+        content:
+        new TextFormField(
           keyboardType: TextInputType.datetime,
           autocorrect: false,
           validator: (value) {
@@ -116,16 +133,20 @@ class _StepperBodyState extends State<StepperBody> {
             }
           },
           onSaved: (String value) {
-            data.email = value;
+            data.fecha = value;
           },
+
           maxLines: 1,
           decoration: new InputDecoration(
               labelText: 'Selecciona una fecha',
               hintText: 'Fecha del objetivo',
               icon: const Icon(Icons.date_range),
+
               labelStyle:
               new TextStyle(decorationStyle: TextDecorationStyle.solid)),
-        )),
+        )
+    ),
+
     // new Step(
     //     title: const Text('Fifth Step'),
     //     subtitle: const Text('Subtitle'),
@@ -147,24 +168,24 @@ class _StepperBodyState extends State<StepperBody> {
       final FormState formState = _formKey.currentState;
 
       if (!formState.validate()) {
-        showSnackBarMessage('Please enter correct data');
+        showSnackBarMessage('Rellene todos los campos');
       } else {
         formState.save();
-        print("Name: ${data.name}");
-        print("Phone: ${data.phone}");
-        print("Email: ${data.email}");
+        print("Objetivo: ${data.objetivo}");
+        print("Descripcion: ${data.descripcion}");
+        print("Fecha: ${data.fecha}");
 
         showDialog(
             context: context,
             child: new AlertDialog(
-              title: new Text("Details"),
+              title: new Text("Detalles"),
               //content: new Text("Hello World"),
               content: new SingleChildScrollView(
                 child: new ListBody(
                   children: <Widget>[
-                    new Text("Name : " + data.name),
-                    new Text("Phone : " + data.phone),
-                    new Text("Email : " + data.email),
+                    new Text("Objetivo : " + data.objetivo),
+                    new Text("Descripción : " + data.descripcion),
+                    new Text("Fecha a realizar : " + data.fecha),
                   ],
                 ),
               ),
@@ -185,6 +206,36 @@ class _StepperBodyState extends State<StepperBody> {
           key: _formKey,
           child: new ListView(children: <Widget>[
             new Stepper(
+              controlsBuilder:
+                  (BuildContext context, {VoidCallback onStepContinue, VoidCallback onStepCancel}) {
+                return Row(
+                  children: <Widget>[
+                    FlatButton(
+                      onPressed: onStepContinue,
+                      color: Colors.green,
+                      textColor: Colors.white,
+                      disabledColor: Colors.grey,
+                      disabledTextColor: Colors.black,
+                      padding: EdgeInsets.all(8.0),
+                      splashColor: Colors.blueAccent,
+                      child: const Text('Continuar'),
+                    ),
+                    SizedBox(
+                      width: 20.0,
+                    ),
+                    FlatButton(
+                      onPressed: onStepCancel,
+                      color: Colors.grey,
+                      textColor: Colors.white,
+                      disabledColor: Colors.grey,
+                      disabledTextColor: Colors.black,
+                      padding: EdgeInsets.all(8.0),
+                      splashColor: Colors.blueAccent,
+                      child: const Text('Volver'),
+                    ),
+                  ],
+                );
+              },
               steps: steps,
               type: StepperType.vertical,
               currentStep: this.currStep,
