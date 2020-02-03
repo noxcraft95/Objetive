@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:objetive/crear_objetivo.dart';
+import 'package:objetive/ver_objetivo.dart';
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -54,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onItemTapped(int index) {
     Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => CrearObjetivo()));
+        MaterialPageRoute(builder: (context) => VerObjetivo()));
   }
   void ItemChange(bool val,int index){
     setState(() {
