@@ -165,6 +165,7 @@ class _StepperBodyState extends State<StepperBody> {
     }
 
     void _submitDetails() {
+      //HACER INSERT EN BD
       final FormState formState = _formKey.currentState;
 
       if (!formState.validate()) {
