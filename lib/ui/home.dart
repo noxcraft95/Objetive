@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:objetive/models/nodo_item.dart';
 import 'package:objetive/utils/database_utils.dart';
 import 'package:objetive/utils/date_formatter.dart';
+import 'package:objetive/ver_objetivo.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -28,7 +29,7 @@ class _HomeState extends State<Home> {
         centerTitle: true,
       ),
       floatingActionButton: new FloatingActionButton(
-        backgroundColor: Colors.amberAccent,
+        backgroundColor: Colors.green,
         onPressed: () => _showItemDialog(context),
         child: new Icon(Icons.add),
       ),
@@ -41,16 +42,12 @@ class _HomeState extends State<Home> {
               new Container(
                 padding: new EdgeInsets.only(right: 16.0),
                 child: new ListTile(
+
+                  onTap: () => _onItemTapped(position),
+
                   onLongPress: () =>
                       _showDialogUpdate(context, itemList[position], position),
                   title: itemList[position],
-                  trailing: new Listener(
-                    child: new Icon(
-                      Icons.remove_circle,
-                    ),
-                    onPointerDown: (onPointerEvent) =>
-                        deleteItem(itemList[position].id, position),
-                  ),
                 ),
               ),
               new Divider()
@@ -70,8 +67,8 @@ class _HomeState extends State<Home> {
             controller: itemController,
             autofocus: true,
             decoration: new InputDecoration(
-              labelText: "Add item",
-              hintText: "Ex. dont drink beer",
+              labelText: "Añadir Objetivo",
+              hintText: "Insertar Objetivo",
               icon: new Icon(Icons.note_add),
             ),
           ))
@@ -84,9 +81,9 @@ class _HomeState extends State<Home> {
               itemController.clear();
               Navigator.pop(context);
             },
-            child: new Text("Save")),
+            child: new Text("Guardar")),
         new FlatButton(
-            onPressed: () => Navigator.pop(_), child: new Text("Cancel"))
+            onPressed: () => Navigator.pop(_), child: new Text("Cancelar"))
       ],
     );
     showDialog(context: _, builder: (_) => alert);
@@ -102,7 +99,7 @@ class _HomeState extends State<Home> {
             controller: itemController,
             autofocus: true,
             decoration: new InputDecoration(
-              labelText: "Update item",
+              labelText: "Actualizar Objetivo",
               icon: new Icon(Icons.note_add),
             ),
           ))
@@ -120,9 +117,9 @@ class _HomeState extends State<Home> {
               itemController.clear();
               Navigator.pop(context);
             },
-            child: new Text("Update")),
+            child: new Text("Actualizar")),
         new FlatButton(
-            onPressed: () => Navigator.pop(_), child: new Text("Cancel"))
+            onPressed: () => Navigator.pop(_), child: new Text("Cancelar"))
       ],
     );
     showDialog(context: _, builder: (_) => alert);
@@ -148,6 +145,11 @@ class _HomeState extends State<Home> {
         itemList.add(item);
       });
     });
+  }
+  void _onItemTapped(int index) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => VerObjetivo()));
   }
 
   void deleteItem(int id, int index) async {

@@ -7,7 +7,7 @@ void main() async {
     //debugShowCheckedModeBanner: false,
     home: new Home(),
     theme: ThemeData(
-      primarySwatch: Colors.blueGrey,
+      primarySwatch: Colors.brown,
     ),
     title: "Objetivos",
   ));
