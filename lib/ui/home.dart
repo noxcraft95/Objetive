@@ -12,7 +12,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   final TextEditingController itemController = new TextEditingController();
   var db = new DatabaseHelper();
-  final List<NoDoItem> itemList = <NoDoItem>[];
+  final List<ItemObjetivo> itemList = <ItemObjetivo>[];
 
   @override
   void initState() {
@@ -89,7 +89,7 @@ class _HomeState extends State<Home> {
     showDialog(context: _, builder: (_) => alert);
   }
 
-  void _showDialogUpdate(_, NoDoItem item, int index) {
+  void _showDialogUpdate(_, ItemObjetivo item, int index) {
     itemController.text = item.itemName;
     var alert = new AlertDialog(
       content: new Row(
@@ -108,7 +108,7 @@ class _HomeState extends State<Home> {
       actions: <Widget>[
         new FlatButton(
             onPressed: () async {
-              NoDoItem itemNew = new NoDoItem.fromMap({
+              ItemObjetivo itemNew = new ItemObjetivo.fromMap({
                 "item_name": itemController.text,
                 "date_created": dateFormatted(),
                 "id": item.id
@@ -127,20 +127,20 @@ class _HomeState extends State<Home> {
 
   void _handleSubmitItem(String text) async {
     itemController.clear();
-    NoDoItem item = new NoDoItem(text, dateFormatted());
+    ItemObjetivo item = new ItemObjetivo(text, dateFormatted());
     int itemSavedId = await db.saveItem(item);
     print(itemSavedId);
-    NoDoItem noDoItem = await db.getItem(itemSavedId);
-    print(noDoItem.itemName);
+    ItemObjetivo itemObjetivo = await db.getItem(itemSavedId);
+    print(itemObjetivo.itemName);
     setState(() {
-      itemList.add(noDoItem);
+      itemList.add(itemObjetivo);
     });
   }
 
   void _readItems() async {
     List items = await db.getItems();
     items.forEach((noDoItem) {
-      NoDoItem item = NoDoItem.fromMap(noDoItem);
+      ItemObjetivo item = ItemObjetivo.fromMap(noDoItem);
       setState(() {
         itemList.add(item);
       });
@@ -160,7 +160,7 @@ class _HomeState extends State<Home> {
     print(rowsDeleted);
   }
 
-  void _handleUpdateItem(int index, NoDoItem noDoItem) async {
+  void _handleUpdateItem(int index, ItemObjetivo noDoItem) async {
     int rowsUpdated = await db.updateItem(noDoItem);
     setState(() {
       itemList.removeWhere((element) {

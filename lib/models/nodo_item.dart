@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:objetive/utils/database_utils.dart';
 
 
-class NoDoItem extends StatelessWidget {
+class ItemObjetivo extends StatelessWidget {
   static const String keyItemName = "item_name";
   static const String keyDateCreated = "date_created";
   static const String keyId = "id";
@@ -11,9 +11,9 @@ class NoDoItem extends StatelessWidget {
   String _dateCreated;
   int _id;
 
-  NoDoItem(this._itemName, this._dateCreated);
+  ItemObjetivo(this._itemName, this._dateCreated);
 
-  NoDoItem.map(dynamic obj) {
+  ItemObjetivo.map(dynamic obj) {
     this._itemName = obj[keyItemName];
     this._dateCreated = obj[keyDateCreated];
     this._id = obj[keyId];
@@ -35,7 +35,7 @@ class NoDoItem extends StatelessWidget {
     return map;
   }
 
-  NoDoItem.fromMap(Map<String, dynamic> map) {
+  ItemObjetivo.fromMap(Map<String, dynamic> map) {
     this._itemName = map[keyItemName];
     this._dateCreated = map[keyDateCreated];
     this._id = map[keyId];

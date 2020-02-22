@@ -37,11 +37,11 @@ class DatabaseHelper {
   void _onCreate(Database db, int version) async {
     await db.execute("CREATE TABLE $tableName("
         "$columnId INTEGER PRIMARY KEY, "
-        "$columnItemName TEXT, "
+        "$columnItemName TEXT NOT NULL, "
         "$columnDateCreated TEXT);");
   }
 
-  Future<int> saveItem(NoDoItem item) async {
+  Future<int> saveItem(ItemObjetivo item) async {
     var dbClient = await getDb;
     int rowsSaved = await dbClient.insert(tableName, item.toMap());
     return rowsSaved;
@@ -59,12 +59,12 @@ class DatabaseHelper {
         await dbClient.rawQuery("SELECT COUNT (*) FROM $tableName"));
   }
 
-  Future<NoDoItem> getItem(int itemId) async {
+  Future<ItemObjetivo> getItem(int itemId) async {
     var dbClient = await getDb;
     var item = await dbClient
         .rawQuery("SELECT * FROM ${tableName} WHERE $columnId=$itemId");
     if (item.length == 0) return null;
-    return new NoDoItem.fromMap(item.first);
+    return new ItemObjetivo.fromMap(item.first);
   }
 
   Future<int> deleteItem(int id) async {
@@ -74,7 +74,7 @@ class DatabaseHelper {
     return rowsDeleted;
   }
 
-  Future<int> updateItem(NoDoItem item) async {
+  Future<int> updateItem(ItemObjetivo item) async {
     int id = item.id;
     print("id of the item is $id");
     var db = await getDb;

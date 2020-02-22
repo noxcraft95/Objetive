@@ -23,6 +23,7 @@ dependencies:
   sqflite: any
   path_provider: "^0.4.1"
   intl: "^0.15.6"
+  validators: ^2.0.0
 
 dev_dependencies:
   flutter_test:
