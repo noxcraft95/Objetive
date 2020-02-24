@@ -31,6 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
   List<String> opcionesRealizado = <String>['', 'Sin realizar', 'Realizado'];
   String realizado = '';
   Objetivo objetivo = new Objetivo();
+  Icon icono = Icon(Icons.work, color: Colors.orange);
 
   @override
   Widget build(BuildContext context) {
@@ -45,52 +46,83 @@ class _MyHomePageState extends State<MyHomePage> {
               key: _formKey,
               autovalidate: true,
               child: new ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 26.0),
                 children: <Widget>[
+                  SizedBox(height: 12),
                   new TextFormField(
                     decoration: const InputDecoration(
-                      icon: const Icon(Icons.title),
+                      icon: const Icon(Icons.title, color: Colors.green),
                       hintText: 'Introduce el objetivo',
                       labelText: 'Objetivo',
+                      filled: true,
+                      border: UnderlineInputBorder(),
                     ),
                   ),
+                  SizedBox(height: 12),
                   new TextFormField(
                     decoration: const InputDecoration(
-                      icon: const Icon(Icons.description),
+                      icon: const Icon(Icons.description, color: Colors.green),
                       hintText: 'Descripción del objetivo',
                       labelText: 'Descripción',
-                    ),
-                    keyboardType: TextInputType.datetime,
-                  ),
-                  new TextFormField(
-                    decoration: const InputDecoration(
-                      icon: const Icon(Icons.description),
-                      hintText: 'Plan de acción',
-                      labelText: 'Plan de acción',
+                      border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.text,
+                    maxLines: 5,
                   ),
+                  SizedBox(height: 12),
                   new TextFormField(
                     decoration: const InputDecoration(
-                      icon: const Icon(Icons.calendar_today),
-                      hintText: 'Fecha de creación',
-                      labelText: 'Fecha de creación',
+                      icon: const Icon(
+                        Icons.pan_tool,
+                        color: Colors.orange,
+                      ),
+                      hintText: 'Plan de acción',
+                      labelText: 'Plan de acción',
+                      border: OutlineInputBorder(),
                     ),
-                    keyboardType: TextInputType.datetime,
+                    keyboardType: TextInputType.text,
+                    maxLines: 2,
                   ),
-                  new TextFormField(
-                    decoration: const InputDecoration(
-                      icon: const Icon(Icons.calendar_today),
-                      hintText: 'Fecha a realizar',
-                      labelText: 'Fecha a realizar',
-                    ),
-                    keyboardType: TextInputType.datetime,
+                  SizedBox(height: 12),
+                  new Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: <Widget>[
+                      new Flexible(
+                        child: new TextFormField(
+                          enabled: false,
+                          decoration: const InputDecoration(
+                            icon: const Icon(Icons.calendar_today,
+                                color: Colors.green),
+                            hintText: 'Creación:',
+                            labelText: 'Creación:',
+                            filled: true,
+                            border: UnderlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 20.0,
+                      ),
+                      new Flexible(
+                        child: new TextFormField(
+                          decoration: const InputDecoration(
+                            icon: const Icon(Icons.calendar_today,
+                                color: Colors.green),
+                            hintText: 'Realizar el:',
+                            labelText: 'Realizar el:',
+                            filled: true,
+                            border: UnderlineInputBorder(),
+                          ),
+                          keyboardType: TextInputType.datetime,
+                        ),
+                      ),
+                    ],
                   ),
                   new FormField(
                     builder: (FormFieldState state) {
                       return InputDecorator(
                         decoration: InputDecoration(
-                          icon: const Icon(Icons.work),
+                          icon: icono,
                           labelText: '¿Realizado?',
                         ),
                         isEmpty: realizado == '',
@@ -100,6 +132,19 @@ class _MyHomePageState extends State<MyHomePage> {
                             isDense: true,
                             onChanged: (String newValue) {
                               setState(() {
+                                print(newValue == "Sin realizar");
+                                switch (newValue) {
+                                  case "Sin realizar":
+                                    icono = Icon(Icons.work, color: Colors.red);
+                                    break;
+                                  case "Realizado":
+                                    icono =
+                                        Icon(Icons.work, color: Colors.green);
+                                    break;
+                                  default:
+                                    icono = icono =
+                                        Icon(Icons.work, color: Colors.orange);
+                                }
                                 objetivo.realizado = newValue;
                                 realizado = newValue;
                                 state.didChange(newValue);
