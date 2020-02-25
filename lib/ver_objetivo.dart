@@ -57,6 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       filled: true,
                       border: UnderlineInputBorder(),
                     ),
+                    maxLength: 25,
                   ),
                   SizedBox(height: 12),
                   new TextFormField(
@@ -67,7 +68,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       border: OutlineInputBorder(),
                     ),
                     keyboardType: TextInputType.text,
-                    maxLines: 5,
+                    maxLines: 2,
+                    minLines: 1,
+                    maxLength: 50,
                   ),
                   SizedBox(height: 12),
                   new TextFormField(
@@ -82,6 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     keyboardType: TextInputType.text,
                     maxLines: 2,
+                    minLines: 1,
+                    maxLength: 50,
                   ),
                   SizedBox(height: 12),
                   new Row(
@@ -98,6 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             filled: true,
                             border: UnderlineInputBorder(),
                           ),
+                          maxLength: 10,
                         ),
                       ),
                       SizedBox(
@@ -114,6 +120,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             border: UnderlineInputBorder(),
                           ),
                           keyboardType: TextInputType.datetime,
+                          maxLength: 10,
                         ),
                       ),
                     ],
