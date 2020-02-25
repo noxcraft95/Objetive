@@ -77,6 +77,9 @@ class _HomeState extends State<Home> {
       actions: <Widget>[
         new FlatButton(
             onPressed: () {
+              if(itemController.text == ""){
+                itemController.text = "Sin título";
+              }
               _handleSubmitItem(itemController.text);
               itemController.clear();
               Navigator.pop(context);
