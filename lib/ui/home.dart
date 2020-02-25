@@ -107,15 +107,11 @@ class _HomeState extends State<Home> {
       actions: <Widget>[
         new FlatButton(
             onPressed: () {
-              if(itemControllerObjetivo.text == ""){
-                itemControllerObjetivo.text = "Sin título";
+              if(itemController.text == ""){
+                itemController.text = "Sin título";
               }
-
-              _handleSubmitItem(itemControllerObjetivo.text,itemControllerDescripcion.text,itemControllerFecha.text);
-              itemControllerObjetivo.clear();
-              itemControllerDescripcion.clear();
-              itemControllerFecha.clear();
-
+              _handleSubmitItem(itemController.text);
+              itemController.clear();
               Navigator.pop(context);
             },
             child: new Text("Guardar")),
