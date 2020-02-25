@@ -90,7 +90,7 @@ class _HomeState extends State<Home> {
             ),
           ),
 
-        new TextFormField(
+          new TextFormField(
             controller: itemControllerFecha,
             autofocus: true,
             decoration: new InputDecoration(
@@ -107,11 +107,15 @@ class _HomeState extends State<Home> {
       actions: <Widget>[
         new FlatButton(
             onPressed: () {
-              if(itemController.text == ""){
-                itemController.text = "Sin título";
+              if(itemControllerObjetivo.text == ""){
+                itemControllerObjetivo.text = "Sin título";
               }
-              _handleSubmitItem(itemController.text);
-              itemController.clear();
+
+              _handleSubmitItem(itemControllerObjetivo.text,itemControllerDescripcion.text,itemControllerFecha.text);
+              itemControllerObjetivo.clear();
+              itemControllerDescripcion.clear();
+              itemControllerFecha.clear();
+
               Navigator.pop(context);
             },
             child: new Text("Guardar")),
@@ -129,13 +133,13 @@ class _HomeState extends State<Home> {
         children: <Widget>[
           new Expanded(
               child: new TextField(
-            controller: itemControllerObjetivo,
-            autofocus: true,
-            decoration: new InputDecoration(
-              labelText: "Actualizar Objetivo",
-              icon: new Icon(Icons.note_add),
-            ),
-          ))
+                controller: itemControllerObjetivo,
+                autofocus: true,
+                decoration: new InputDecoration(
+                  labelText: "Actualizar Objetivo",
+                  icon: new Icon(Icons.note_add),
+                ),
+              ))
         ],
       ),
       actions: <Widget>[

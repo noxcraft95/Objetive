@@ -68,6 +68,7 @@ class ItemObjetivo extends StatelessWidget {
     );*/
     return new ListTile(
       leading: new CircleAvatar(
+        backgroundColor: Colors.orange,
         child: new Text(
           _itemName[0],
           style: new TextStyle(color: Colors.white),
