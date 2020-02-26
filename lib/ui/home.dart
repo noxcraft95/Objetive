@@ -10,7 +10,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final TextEditingController itemController = new TextEditingController();
+  final TextEditingController itemControllerObjetivo = new TextEditingController();
+  final TextEditingController itemControllerDescripcion = new TextEditingController();
+  final TextEditingController itemControllerFecha = new TextEditingController();
   var db = new DatabaseHelper();
   final List<ItemObjetivo> itemList = <ItemObjetivo>[];
 
@@ -60,25 +62,60 @@ class _HomeState extends State<Home> {
 
   void _showItemDialog(_) {
     var alert = new AlertDialog(
-      content: new Row(
+      content: new Column(
         children: <Widget>[
-          new Expanded(
-              child: new TextField(
-            controller: itemController,
+          new TextFormField(
+            controller: itemControllerObjetivo,
             autofocus: true,
+            maxLength: 25,
+            minLines: 1,
+            maxLines: 2,
             decoration: new InputDecoration(
               labelText: "Añadir Objetivo",
               hintText: "Insertar Objetivo",
-              icon: new Icon(Icons.note_add),
+              icon: new Icon(Icons.ac_unit),
             ),
-          ))
+          ),
+
+          new TextFormField(
+            controller: itemControllerDescripcion,
+            autofocus: true,
+            maxLength: 50,
+            minLines: 1,
+            maxLines: 2,
+            decoration: new InputDecoration(
+              labelText: "Descripción",
+              hintText: "Insertar Descripción",
+              icon: new Icon(Icons.accessibility_new),
+            ),
+          ),
+
+          new TextFormField(
+            controller: itemControllerFecha,
+            autofocus: true,
+            decoration: new InputDecoration(
+              labelText: "Añadir Fecha",
+              hintText: "Insertar Fecha",
+              icon: new Icon(Icons.add_to_home_screen),
+            ),
+          )
+
+
+
         ],
       ),
       actions: <Widget>[
         new FlatButton(
             onPressed: () {
-              _handleSubmitItem(itemController.text);
-              itemController.clear();
+              if(itemControllerObjetivo.text == ""){
+                itemControllerObjetivo.text = "Sin título";
+              }
+
+              _handleSubmitItem(itemControllerObjetivo.text,itemControllerDescripcion.text,itemControllerFecha.text);
+              itemControllerObjetivo.clear();
+              itemControllerDescripcion.clear();
+              itemControllerFecha.clear();
+
               Navigator.pop(context);
             },
             child: new Text("Guardar")),
@@ -90,31 +127,31 @@ class _HomeState extends State<Home> {
   }
 
   void _showDialogUpdate(_, ItemObjetivo item, int index) {
-    itemController.text = item.itemName;
+    itemControllerObjetivo.text = item.itemName;
     var alert = new AlertDialog(
       content: new Row(
         children: <Widget>[
           new Expanded(
               child: new TextField(
-            controller: itemController,
-            autofocus: true,
-            decoration: new InputDecoration(
-              labelText: "Actualizar Objetivo",
-              icon: new Icon(Icons.note_add),
-            ),
-          ))
+                controller: itemControllerObjetivo,
+                autofocus: true,
+                decoration: new InputDecoration(
+                  labelText: "Actualizar Objetivo",
+                  icon: new Icon(Icons.note_add),
+                ),
+              ))
         ],
       ),
       actions: <Widget>[
         new FlatButton(
             onPressed: () async {
               ItemObjetivo itemNew = new ItemObjetivo.fromMap({
-                "item_name": itemController.text,
+                "item_name": itemControllerObjetivo.text,
                 "date_created": dateFormatted(),
                 "id": item.id
               });
               _handleUpdateItem(index, itemNew);
-              itemController.clear();
+              itemControllerObjetivo.clear();
               Navigator.pop(context);
             },
             child: new Text("Actualizar")),
@@ -125,9 +162,11 @@ class _HomeState extends State<Home> {
     showDialog(context: _, builder: (_) => alert);
   }
 
-  void _handleSubmitItem(String text) async {
-    itemController.clear();
-    ItemObjetivo item = new ItemObjetivo(text, dateFormatted());
+  void _handleSubmitItem(String textObjetivo, String textDescripcion, String textFecha) async {
+    itemControllerObjetivo.clear();
+    itemControllerDescripcion.clear();
+    itemControllerFecha.clear();
+    ItemObjetivo item = new ItemObjetivo(textObjetivo, dateFormatted());
     int itemSavedId = await db.saveItem(item);
     print(itemSavedId);
     ItemObjetivo itemObjetivo = await db.getItem(itemSavedId);
