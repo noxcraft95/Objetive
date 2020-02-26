@@ -7,10 +7,14 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
 
 class DatabaseHelper {
-  static const String tableName = "table_notodo";
+  static const String tableName = "table_objetivo";
   static const String columnId = "id";
-  static const String columnItemName = "item_name";
-  static const String columnDateCreated = "date_created";
+  static const String columnTitulo = "titulo";
+  static const String columnDescripcion = "descripcion";
+  static const String columnPlanAccion = "plan_accion";
+  static const String columnFechaCreacion = "fecha_creacion";
+  static const String columnFechaRealizar = "fecha_realizar";
+  static const String columnRealizado = "realizado";
 
   static final DatabaseHelper _instance = new DatabaseHelper.internal();
 
@@ -29,7 +33,7 @@ class DatabaseHelper {
 
   initDb() async {
     Directory directory = await getApplicationDocumentsDirectory();
-    String path = join(directory.path, "no_todo_db.db");
+    String path = join(directory.path, "objetive.db");
     var dbCreated = await openDatabase(path, version: 1, onCreate: _onCreate);
     return dbCreated;
   }
@@ -37,9 +41,14 @@ class DatabaseHelper {
   void _onCreate(Database db, int version) async {
     await db.execute("CREATE TABLE $tableName("
         "$columnId INTEGER PRIMARY KEY, "
-        "$columnItemName TEXT NOT NULL, "
-        "$columnDateCreated TEXT);");
+        "$columnTitulo TEXT NOT NULL, "
+        "$columnDescripcion TEXT, "
+        "$columnPlanAccion TEXT, "
+        "$columnFechaCreacion TEXT NOT NULL,"
+        "$columnFechaRealizar TEXT,"
+        "$columnRealizado TEXT );");
   }
+
 
   Future<int> saveItem(ItemObjetivo item) async {
     var dbClient = await getDb;

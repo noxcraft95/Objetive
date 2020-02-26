@@ -10,8 +10,10 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  final TextEditingController itemControllerObjetivo = new TextEditingController();
-  final TextEditingController itemControllerDescripcion = new TextEditingController();
+  final TextEditingController itemControllerObjetivo =
+      new TextEditingController();
+  final TextEditingController itemControllerDescripcion =
+      new TextEditingController();
   final TextEditingController itemControllerFecha = new TextEditingController();
   var db = new DatabaseHelper();
   final List<ItemObjetivo> itemList = <ItemObjetivo>[];
@@ -44,9 +46,7 @@ class _HomeState extends State<Home> {
               new Container(
                 padding: new EdgeInsets.only(right: 16.0),
                 child: new ListTile(
-
                   onTap: () => _onItemTapped(position),
-
                   onLongPress: () =>
                       _showDialogUpdate(context, itemList[position], position),
                   title: itemList[position],
@@ -62,56 +62,55 @@ class _HomeState extends State<Home> {
 
   void _showItemDialog(_) {
     var alert = new AlertDialog(
-      content: new Column(
-        children: <Widget>[
-          new TextFormField(
-            controller: itemControllerObjetivo,
-            autofocus: true,
-            maxLength: 25,
-            minLines: 1,
-            maxLines: 2,
-            decoration: new InputDecoration(
-              labelText: "Añadir Objetivo",
-              hintText: "Insertar Objetivo",
-              icon: new Icon(Icons.ac_unit),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            new TextFormField(
+              controller: itemControllerObjetivo,
+              autofocus: true,
+              maxLength: 25,
+              minLines: 1,
+              maxLines: 2,
+              decoration: new InputDecoration(
+                labelText: "Añadir Objetivo",
+                hintText: "Insertar Objetivo",
+                icon: new Icon(Icons.title),
+              ),
             ),
-          ),
-
-          new TextFormField(
-            controller: itemControllerDescripcion,
-            autofocus: true,
-            maxLength: 50,
-            minLines: 1,
-            maxLines: 2,
-            decoration: new InputDecoration(
-              labelText: "Descripción",
-              hintText: "Insertar Descripción",
-              icon: new Icon(Icons.accessibility_new),
+            new TextFormField(
+              controller: itemControllerDescripcion,
+              autofocus: true,
+              maxLength: 50,
+              minLines: 1,
+              maxLines: 2,
+              decoration: new InputDecoration(
+                labelText: "Descripción",
+                hintText: "Insertar Descripción",
+                icon: new Icon(Icons.accessibility_new),
+              ),
             ),
-          ),
-
-          new TextFormField(
-            controller: itemControllerFecha,
-            autofocus: true,
-            decoration: new InputDecoration(
-              labelText: "Añadir Fecha",
-              hintText: "Insertar Fecha",
-              icon: new Icon(Icons.add_to_home_screen),
-            ),
-          )
-
-
-
-        ],
+            new TextFormField(
+              controller: itemControllerFecha,
+              autofocus: true,
+              decoration: new InputDecoration(
+                labelText: "Añadir Fecha",
+                hintText: "Insertar Fecha",
+                icon: new Icon(Icons.add_to_home_screen),
+              ),
+            )
+          ],
+        ),
       ),
       actions: <Widget>[
         new FlatButton(
             onPressed: () {
-              if(itemControllerObjetivo.text == ""){
+              if (itemControllerObjetivo.text == "") {
                 itemControllerObjetivo.text = "Sin título";
               }
 
-              _handleSubmitItem(itemControllerObjetivo.text,itemControllerDescripcion.text,itemControllerFecha.text);
+              _handleSubmitItem(itemControllerObjetivo.text,
+                  itemControllerDescripcion.text, itemControllerFecha.text);
               itemControllerObjetivo.clear();
               itemControllerDescripcion.clear();
               itemControllerFecha.clear();
@@ -127,19 +126,19 @@ class _HomeState extends State<Home> {
   }
 
   void _showDialogUpdate(_, ItemObjetivo item, int index) {
-    itemControllerObjetivo.text = item.itemName;
+    itemControllerObjetivo.text = item.titulo;
     var alert = new AlertDialog(
       content: new Row(
         children: <Widget>[
           new Expanded(
               child: new TextField(
-                controller: itemControllerObjetivo,
-                autofocus: true,
-                decoration: new InputDecoration(
-                  labelText: "Actualizar Objetivo",
-                  icon: new Icon(Icons.note_add),
-                ),
-              ))
+            controller: itemControllerObjetivo,
+            autofocus: true,
+            decoration: new InputDecoration(
+              labelText: "Actualizar Objetivo",
+              icon: new Icon(Icons.note_add),
+            ),
+          ))
         ],
       ),
       actions: <Widget>[
@@ -162,7 +161,8 @@ class _HomeState extends State<Home> {
     showDialog(context: _, builder: (_) => alert);
   }
 
-  void _handleSubmitItem(String textObjetivo, String textDescripcion, String textFecha) async {
+  void _handleSubmitItem(
+      String textObjetivo, String textDescripcion, String textFecha) async {
     itemControllerObjetivo.clear();
     itemControllerDescripcion.clear();
     itemControllerFecha.clear();
@@ -170,7 +170,7 @@ class _HomeState extends State<Home> {
     int itemSavedId = await db.saveItem(item);
     print(itemSavedId);
     ItemObjetivo itemObjetivo = await db.getItem(itemSavedId);
-    print(itemObjetivo.itemName);
+    print(itemObjetivo.titulo);
     setState(() {
       itemList.add(itemObjetivo);
     });
@@ -185,10 +185,10 @@ class _HomeState extends State<Home> {
       });
     });
   }
+
   void _onItemTapped(int index) {
     Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => VerObjetivo()));
+        context, MaterialPageRoute(builder: (context) => VerObjetivo()));
   }
 
   void deleteItem(int id, int index) async {
@@ -203,7 +203,7 @@ class _HomeState extends State<Home> {
     int rowsUpdated = await db.updateItem(noDoItem);
     setState(() {
       itemList.removeWhere((element) {
-        itemList[index].itemName == noDoItem.itemName;
+        itemList[index].titulo == noDoItem.titulo;
       });
       _readItems();
     });

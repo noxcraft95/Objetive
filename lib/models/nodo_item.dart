@@ -1,34 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:objetive/utils/database_utils.dart';
+import 'package:objetive/utils/date_formatter.dart';
 
 
 class ItemObjetivo extends StatelessWidget {
-  static const String keyItemName = "item_name";
-  static const String keyDateCreated = "date_created";
+  static const String keyTitulo = "titulo";
+  static const String keyDescripcion = "descripcion";
+  static const String keyPlanAccion = "plan_accion";
+  static const String keyFechaCreacion = "fecha_creacion";
+  static const String keyFechaRealizar = "fecha_Realizar";
+  static const String keyRealizado = "realizado";
   static const String keyId = "id";
 
-  String _itemName;
-  String _dateCreated;
+  String _titulo;
+  String _descripcion;
+  String _planAccion;
+  String _fechaCreacion;
+  String _fechaRealizar;
   int _id;
+  bool realizado;
 
-  ItemObjetivo(this._itemName, this._dateCreated);
+  ItemObjetivo(this._titulo, this._fechaCreacion);
 
   ItemObjetivo.map(dynamic obj) {
-    this._itemName = obj[keyItemName];
-    this._dateCreated = obj[keyDateCreated];
+    this._titulo = obj[keyTitulo];
+    this._fechaCreacion = obj[keyFechaCreacion];
     this._id = obj[keyId];
   }
 
-  String get itemName => _itemName;
-
-  String get dateCreated => _dateCreated;
-
+  String get titulo => _titulo;
+  String get fechaCreacion => _fechaCreacion;
   int get id => _id;
 
   Map<String, dynamic> toMap() {
     Map map = new Map<String, dynamic>();
-    map[keyItemName] = _itemName;
-    map[keyDateCreated] = _dateCreated;
+    map[keyTitulo] = _titulo;
+    map[keyFechaCreacion] = _fechaCreacion;
     if (_id != null) {
       map[keyId] = _id;
     }
@@ -36,8 +43,8 @@ class ItemObjetivo extends StatelessWidget {
   }
 
   ItemObjetivo.fromMap(Map<String, dynamic> map) {
-    this._itemName = map[keyItemName];
-    this._dateCreated = map[keyDateCreated];
+    this._titulo = map[keyTitulo];
+    this._fechaCreacion = map[keyFechaCreacion];
     this._id = map[keyId];
   }
 
@@ -70,12 +77,12 @@ class ItemObjetivo extends StatelessWidget {
       leading: new CircleAvatar(
         backgroundColor: Colors.orange,
         child: new Text(
-          _itemName[0],
+          _titulo[0],
           style: new TextStyle(color: Colors.white),
         ),
       ),
-      title: new Text(_itemName),
-      subtitle: new Text(_dateCreated),
+      title: new Text(_titulo),
+      subtitle: new Text(_fechaCreacion),
 
     );
   }
