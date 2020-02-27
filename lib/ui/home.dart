@@ -33,6 +33,7 @@ class _HomeState extends State<Home> {
         Navigator.pop(context);
         itemControllerFecha.text = parseFecha(picked);
         selectedDate = picked;
+        _focusNodeFecha.unfocus();
       });
   }
 
@@ -43,6 +44,7 @@ class _HomeState extends State<Home> {
     super.initState();
     _readItems();
       _focusNodeFecha.addListener(() {
+
         _selectDate(context);
       });
   }
@@ -198,7 +200,7 @@ class _HomeState extends State<Home> {
     itemControllerObjetivo.clear();
     itemControllerDescripcion.clear();
     itemControllerFecha.clear();
-    ItemObjetivo item = new ItemObjetivo(textObjetivo, dateFormatted());
+    ItemObjetivo item = new ItemObjetivo(textObjetivo, parseFecha(selectedDate));
     int itemSavedId = await db.saveItem(item);
     print(itemSavedId);
     ItemObjetivo itemObjetivo = await db.getItem(itemSavedId);
