@@ -28,12 +28,13 @@ class _HomeState extends State<Home> {
         initialDate: selectedDate,
         firstDate: DateTime(2020, 1),
         lastDate: DateTime(2101));
+    _focusNodeFecha.unfocus();
+     Navigator.pop(context);
+    _showItemDialog(context);
     if (picked != null && picked != selectedDate)
       setState(() {
-        Navigator.pop(context);
         itemControllerFecha.text = parseFecha(picked);
         selectedDate = picked;
-        _focusNodeFecha.unfocus();
       });
   }
 
@@ -44,7 +45,6 @@ class _HomeState extends State<Home> {
     super.initState();
     _readItems();
       _focusNodeFecha.addListener(() {
-
         _selectDate(context);
       });
   }
@@ -149,14 +149,20 @@ class _HomeState extends State<Home> {
               itemControllerDescripcion.clear();
               itemControllerFecha.clear();
 
-              Navigator.pop(context);
+              volverPrincipal(context);
             },
             child: new Text("Guardar")),
         new FlatButton(
-            onPressed: () => Navigator.pop(_), child: new Text("Cancelar"))
+            onPressed: () =>  volverPrincipal(_), child: new Text("Cancelar"))
       ],
     );
     showDialog(context: _, builder: (_) => alert);
+  }
+
+  void volverPrincipal(_){
+    while(Navigator.canPop(context)){
+      Navigator.pop(context);
+    }
   }
 
   void _showDialogUpdate(_, ItemObjetivo item, int index) {
