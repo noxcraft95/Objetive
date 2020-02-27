@@ -18,10 +18,39 @@ class _HomeState extends State<Home> {
   var db = new DatabaseHelper();
   final List<ItemObjetivo> itemList = <ItemObjetivo>[];
 
+  //DatePicker
+  final FocusNode _focusNodeFecha = FocusNode();
+
+  DateTime selectedDate = DateTime.now();
+  Future<Null> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(2020, 1),
+        lastDate: DateTime(2101));
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        Navigator.pop(context);
+        itemControllerFecha.text = parseFecha(picked);
+        selectedDate = picked;
+      });
+  }
+
+
+
   @override
   void initState() {
     super.initState();
     _readItems();
+      _focusNodeFecha.addListener(() {
+        _selectDate(context);
+      });
+  }
+
+  @override
+  void dispose() {
+    _focusNodeFecha.dispose();
+    super.dispose();
   }
 
   @override
@@ -64,8 +93,9 @@ class _HomeState extends State<Home> {
     var alert = new AlertDialog(
       content: SingleChildScrollView(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+
             new TextFormField(
               controller: itemControllerObjetivo,
               autofocus: true,
@@ -87,17 +117,19 @@ class _HomeState extends State<Home> {
               decoration: new InputDecoration(
                 labelText: "Descripción",
                 hintText: "Insertar Descripción",
-                icon: new Icon(Icons.accessibility_new),
+                icon: new Icon(Icons.description),
               ),
             ),
             new TextFormField(
               controller: itemControllerFecha,
               autofocus: true,
+              focusNode: _focusNodeFecha,
               decoration: new InputDecoration(
                 labelText: "Añadir Fecha",
-                hintText: "Insertar Fecha",
-                icon: new Icon(Icons.add_to_home_screen),
+                hintText: "${selectedDate.toLocal()}".split(' ')[0],
+                icon: new Icon(Icons.calendar_today),
               ),
+
             )
           ],
         ),

@@ -5,3 +5,9 @@ String dateFormatted() {
   var format = new DateFormat("dd/MM/yyyy");
   return format.format(date);
 }
+
+String parseFecha(DateTime date) {
+  var format = new DateFormat("dd/MM/yyyy");
+  return format.format(date);
+}
+
