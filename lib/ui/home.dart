@@ -258,8 +258,9 @@ class _HomeState extends State<Home> {
     itemControllerObjetivo.clear();
     itemControllerDescripcion.clear();
     itemControllerFecha.clear();
+    String realizado = "Sin realizar";
     ItemObjetivo item =
-        new ItemObjetivo(textObjetivo, parseFecha(selectedDate));
+        new ItemObjetivo(textObjetivo,textDescripcion,parseFecha(DateTime.now()), parseFecha(selectedDate), realizado);
     int itemSavedId = await db.saveItem(item);
     print(itemSavedId);
     ItemObjetivo itemObjetivo = await db.getItem(itemSavedId);

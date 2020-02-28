@@ -45,13 +45,14 @@ class DatabaseHelper {
         "$columnDescripcion TEXT, "
         "$columnPlanAccion TEXT, "
         "$columnFechaCreacion TEXT NOT NULL,"
-        "$columnFechaRealizar TEXT,"
+        "$columnFechaRealizar TEXT NOT NULL,"
         "$columnRealizado TEXT );");
   }
 
 
   Future<int> saveItem(ItemObjetivo item) async {
     var dbClient = await getDb;
+    print(item.toMap());
     int rowsSaved = await dbClient.insert(tableName, item.toMap());
     return rowsSaved;
   }
