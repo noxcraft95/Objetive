@@ -10,6 +10,11 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  //Principal
+  final TextEditingController itemControllerFechaBuqueda =
+      new TextEditingController();
+
+  //Alert Dialog Crear Objetivo
   final TextEditingController itemControllerObjetivo =
       new TextEditingController();
   final TextEditingController itemControllerDescripcion =
@@ -20,16 +25,17 @@ class _HomeState extends State<Home> {
 
   //DatePicker
   final FocusNode _focusNodeFecha = FocusNode();
+  final FocusNode _focusNodeFechaBuscar = FocusNode();
 
   DateTime selectedDate = DateTime.now();
-  Future<Null> _selectDate(BuildContext context) async {
+  Future<Null> _selectorFechaCrear(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
         initialDate: selectedDate,
-        firstDate: DateTime(2020, 1),
-        lastDate: DateTime(2101));
+        firstDate: DateTime(DateTime.now().year),
+        lastDate: DateTime(DateTime.now().year+5));
     _focusNodeFecha.unfocus();
-     Navigator.pop(context);
+    Navigator.pop(context);
     _showItemDialog(context);
     if (picked != null && picked != selectedDate)
       setState(() {
@@ -38,15 +44,31 @@ class _HomeState extends State<Home> {
       });
   }
 
-
+  Future<Null> _selectorFechaBuscar(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: selectedDate,
+        firstDate: DateTime(DateTime.now().year),
+        lastDate: DateTime(DateTime.now().year+5));
+    volverPrincipal(context);
+    _focusNodeFechaBuscar.unfocus();
+    if (picked != null && picked != selectedDate)
+      setState(() {
+        itemControllerFechaBuqueda.text = parseFecha(picked);
+      });
+  }
 
   @override
   void initState() {
     super.initState();
+    itemControllerFechaBuqueda.text = parseFecha(DateTime.now());
     _readItems();
-      _focusNodeFecha.addListener(() {
-        _selectDate(context);
-      });
+    _focusNodeFecha.addListener(() {
+      _selectorFechaCrear(context);
+    });
+    _focusNodeFechaBuscar.addListener(() {
+      _selectorFechaBuscar(context);
+    });
   }
 
   @override
@@ -68,25 +90,50 @@ class _HomeState extends State<Home> {
         onPressed: () => _showItemDialog(context),
         child: new Icon(Icons.add),
       ),
-      body: new ListView.builder(
-        padding: new EdgeInsets.only(bottom: 72.0),
-        itemCount: itemList.length,
-        itemBuilder: (BuildContext context, int position) {
-          return new Column(
-            children: <Widget>[
-              new Container(
-                padding: new EdgeInsets.only(right: 16.0),
-                child: new ListTile(
-                  onTap: () => _onItemTapped(position),
-                  onLongPress: () =>
-                      _showDialogUpdate(context, itemList[position], position),
-                  title: itemList[position],
-                ),
+      body: new Column(
+        children: <Widget>[
+          new Column(children: <Widget>[
+            new Padding(
+              padding: EdgeInsets.all(20),
+              child:
+            new TextFormField(
+              controller: itemControllerFechaBuqueda,
+              autofocus: false,
+              focusNode: _focusNodeFechaBuscar,
+              textAlign: TextAlign.center,
+              decoration: new InputDecoration(
+                contentPadding: EdgeInsets.all(10),
+                icon: new Icon(Icons.search,color: Colors.green,size: 28,),
+                border: OutlineInputBorder(),
               ),
-              new Divider()
-            ],
-          );
-        },
+            )),
+          ]),
+          new SizedBox(
+            height: 12,
+          ),
+          new Expanded(
+            child: new ListView.builder(
+              padding: new EdgeInsets.only(bottom: 72.0),
+              itemCount: itemList.length,
+              itemBuilder: (BuildContext context, int position) {
+                return new Column(
+                  children: <Widget>[
+                    new Container(
+                      padding: new EdgeInsets.only(right: 16.0),
+                      child: new ListTile(
+                        onTap: () => _onItemTapped(position),
+                        onLongPress: () => _showDialogUpdate(
+                            context, itemList[position], position),
+                        title: itemList[position],
+                      ),
+                    ),
+                    new Divider()
+                  ],
+                );
+              },
+            ),
+          )
+        ],
       ),
     );
   }
@@ -95,9 +142,8 @@ class _HomeState extends State<Home> {
     var alert = new AlertDialog(
       content: SingleChildScrollView(
         child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
             new TextFormField(
               controller: itemControllerObjetivo,
               autofocus: true,
@@ -124,14 +170,12 @@ class _HomeState extends State<Home> {
             ),
             new TextFormField(
               controller: itemControllerFecha,
-              autofocus: true,
+              autofocus: false,
               focusNode: _focusNodeFecha,
               decoration: new InputDecoration(
                 labelText: "Añadir Fecha",
-                hintText: "${selectedDate.toLocal()}".split(' ')[0],
                 icon: new Icon(Icons.calendar_today),
               ),
-
             )
           ],
         ),
@@ -153,16 +197,24 @@ class _HomeState extends State<Home> {
             },
             child: new Text("Guardar")),
         new FlatButton(
-            onPressed: () =>  volverPrincipal(_), child: new Text("Cancelar"))
+            onPressed: () => botonVolverCreacion(_),
+            child: new Text("Cancelar"))
       ],
     );
     showDialog(context: _, builder: (_) => alert);
   }
 
-  void volverPrincipal(_){
-    while(Navigator.canPop(context)){
+  void volverPrincipal(_) {
+    while (Navigator.canPop(context)) {
       Navigator.pop(context);
     }
+  }
+
+  void botonVolverCreacion(_) {
+    itemControllerObjetivo.clear();
+    itemControllerDescripcion.clear();
+    itemControllerFecha.clear();
+    volverPrincipal(_);
   }
 
   void _showDialogUpdate(_, ItemObjetivo item, int index) {
@@ -206,7 +258,8 @@ class _HomeState extends State<Home> {
     itemControllerObjetivo.clear();
     itemControllerDescripcion.clear();
     itemControllerFecha.clear();
-    ItemObjetivo item = new ItemObjetivo(textObjetivo, parseFecha(selectedDate));
+    ItemObjetivo item =
+        new ItemObjetivo(textObjetivo, parseFecha(selectedDate));
     int itemSavedId = await db.saveItem(item);
     print(itemSavedId);
     ItemObjetivo itemObjetivo = await db.getItem(itemSavedId);
@@ -239,11 +292,11 @@ class _HomeState extends State<Home> {
     print(rowsDeleted);
   }
 
-  void _handleUpdateItem(int index, ItemObjetivo noDoItem) async {
-    int rowsUpdated = await db.updateItem(noDoItem);
+  void _handleUpdateItem(int index, ItemObjetivo itemObjetivo) async {
+    int rowsUpdated = await db.updateItem(itemObjetivo);
     setState(() {
       itemList.removeWhere((element) {
-        itemList[index].titulo == noDoItem.titulo;
+        itemList[index].titulo == itemObjetivo.titulo;
       });
       _readItems();
     });
