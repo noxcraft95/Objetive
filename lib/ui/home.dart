@@ -33,15 +33,16 @@ class _HomeState extends State<Home> {
         context: context,
         initialDate: selectedDate,
         firstDate: DateTime(DateTime.now().year),
-        lastDate: DateTime(DateTime.now().year+5));
+        lastDate: DateTime(DateTime.now().year + 5));
     _focusNodeFecha.unfocus();
     Navigator.pop(context);
     _showItemDialog(context);
-    if (picked != null && picked != selectedDate)
-      setState(() {
-        itemControllerFecha.text = parseFecha(picked);
-        selectedDate = picked;
-      });
+    if (picked != null) {
+      selectedDate = picked;
+    }
+    setState(() {
+      itemControllerFecha.text = parseFecha(selectedDate);
+    });
   }
 
   Future<Null> _selectorFechaBuscar(BuildContext context) async {
@@ -49,7 +50,7 @@ class _HomeState extends State<Home> {
         context: context,
         initialDate: selectedDate,
         firstDate: DateTime(DateTime.now().year),
-        lastDate: DateTime(DateTime.now().year+5));
+        lastDate: DateTime(DateTime.now().year + 5));
     volverPrincipal(context);
     _focusNodeFechaBuscar.unfocus();
     if (picked != null && picked != selectedDate)
@@ -94,22 +95,27 @@ class _HomeState extends State<Home> {
         children: <Widget>[
           new Column(children: <Widget>[
             new Padding(
-              padding: EdgeInsets.all(20),
-              child:
-            new TextFormField(
-              controller: itemControllerFechaBuqueda,
-              autofocus: false,
-              focusNode: _focusNodeFechaBuscar,
-              textAlign: TextAlign.center,
-              decoration: new InputDecoration(
-                contentPadding: EdgeInsets.all(10),
-                icon: new Icon(Icons.search,color: Colors.green,size: 28,),
-                border: OutlineInputBorder(),
-              ),
-            )),
+                padding: EdgeInsets.all(20),
+                child: new TextFormField(
+                  controller: itemControllerFechaBuqueda,
+                  autofocus: false,
+                  focusNode: _focusNodeFechaBuscar,
+                  textAlign: TextAlign.center,
+                  decoration: new InputDecoration(
+                    fillColor: Colors.green[100],
+                    filled: true,
+                    contentPadding: EdgeInsets.all(10),
+                    icon: new Icon(
+                      Icons.search,
+                      color: Colors.green,
+                      size: 30,
+                    ),
+                    border: OutlineInputBorder(),
+                  ),
+                )),
           ]),
           new SizedBox(
-            height: 12,
+            height: 10,
           ),
           new Expanded(
             child: new ListView.builder(
@@ -118,7 +124,24 @@ class _HomeState extends State<Home> {
               itemBuilder: (BuildContext context, int position) {
                 return new Column(
                   children: <Widget>[
-                    new Container(
+                    new Padding(
+                      padding: EdgeInsets.only(right:15,left:15),
+                      child: new Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border:
+                        Border.all(color: Colors.white, width: 0, style: BorderStyle.solid),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(5.0),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.grey,
+                              offset: Offset(0, 1),
+                              blurRadius: 3,
+                              spreadRadius: 0)
+                        ],
+                      ),
                       padding: new EdgeInsets.only(right: 16.0),
                       child: new ListTile(
                         onTap: () => _onItemTapped(position),
@@ -127,7 +150,8 @@ class _HomeState extends State<Home> {
                         title: itemList[position],
                       ),
                     ),
-                    new Divider()
+                    ),
+                    new Divider(color: Colors.transparent,)
                   ],
                 );
               },
@@ -259,8 +283,8 @@ class _HomeState extends State<Home> {
     itemControllerDescripcion.clear();
     itemControllerFecha.clear();
     String realizado = "Sin realizar";
-    ItemObjetivo item =
-        new ItemObjetivo(textObjetivo,textDescripcion,parseFecha(DateTime.now()), parseFecha(selectedDate), realizado);
+    ItemObjetivo item = new ItemObjetivo(textObjetivo, textDescripcion,
+        parseFecha(DateTime.now()), parseFecha(selectedDate), realizado);
     int itemSavedId = await db.saveItem(item);
     print(itemSavedId);
     ItemObjetivo itemObjetivo = await db.getItem(itemSavedId);

@@ -92,7 +92,7 @@ class ItemObjetivo extends StatelessWidget {
       leading: new CircleAvatar(
         backgroundColor: Colors.orange,
         child: new Text(
-          _titulo[0],
+          _titulo[0].toUpperCase(),
           style: new TextStyle(color: Colors.white),
         ),
       ),
