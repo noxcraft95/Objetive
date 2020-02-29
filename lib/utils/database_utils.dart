@@ -62,6 +62,11 @@ class DatabaseHelper {
     var result = await dbClient.rawQuery("SELECT * FROM $tableName");
     return result.toList();
   }
+  Future<List> getItemsFecha(String fecha) async {
+    var dbClient = await getDb;
+    var result = await dbClient.rawQuery("SELECT * FROM ${tableName} WHERE $columnFechaRealizar LIKE '%$fecha%'");
+    return result.toList();
+  }
 
   Future<int> getCount() async {
     var dbClient = await getDb;

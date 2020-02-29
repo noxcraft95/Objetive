@@ -27,6 +27,7 @@ class _HomeState extends State<Home> {
   final FocusNode _focusNodeFecha = FocusNode();
   final FocusNode _focusNodeFechaBuscar = FocusNode();
 
+  //DatePickerCrear
   DateTime selectedDate = DateTime.now();
   Future<Null> _selectorFechaCrear(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -44,7 +45,7 @@ class _HomeState extends State<Home> {
       itemControllerFecha.text = parseFecha(selectedDate);
     });
   }
-
+  //DatePickerBuscar
   Future<Null> _selectorFechaBuscar(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
@@ -56,6 +57,7 @@ class _HomeState extends State<Home> {
     if (picked != null && picked != selectedDate)
       setState(() {
         itemControllerFechaBuqueda.text = parseFecha(picked);
+        _readItems();
       });
   }
 
@@ -295,7 +297,8 @@ class _HomeState extends State<Home> {
   }
 
   void _readItems() async {
-    List items = await db.getItems();
+    List items = await db.getItemsFecha(itemControllerFechaBuqueda.text);
+    itemList.clear();
     items.forEach((noDoItem) {
       ItemObjetivo item = ItemObjetivo.fromMap(noDoItem);
       setState(() {
