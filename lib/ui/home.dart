@@ -59,7 +59,10 @@ class _HomeState extends State<Home> {
         volverPrincipal(context);
     _focusNodeFechaBuscar.unfocus();
     if (picked != null)
-      setState(() {
+      setState((){
+        //Cargamos la fecha actual en la de crear objetivo
+        itemControllerFecha.text = parseFecha(picked);
+        //Actualizamos la fecha de busqueda a la elegida
         itemControllerFechaBusqueda.text = parseFecha(picked);
         _readItems();
       });
