@@ -11,14 +11,14 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   //Principal
-  final TextEditingController itemControllerFechaBuqueda =
-      new TextEditingController();
+  final TextEditingController itemControllerFechaBusqueda =
+  new TextEditingController();
 
   //Alert Dialog Crear Objetivo
   final TextEditingController itemControllerObjetivo =
-      new TextEditingController();
+  new TextEditingController();
   final TextEditingController itemControllerDescripcion =
-      new TextEditingController();
+  new TextEditingController();
   final TextEditingController itemControllerFecha = new TextEditingController();
   var db = new DatabaseHelper();
   final List<ItemObjetivo> itemList = <ItemObjetivo>[];
@@ -27,7 +27,10 @@ class _HomeState extends State<Home> {
   final FocusNode _focusNodeFecha = FocusNode();
   final FocusNode _focusNodeFechaBuscar = FocusNode();
 
+  //DatePickerCrear
   DateTime selectedDate = DateTime.now();
+  DateTime selectedDateBuscar = DateTime.now();
+
   Future<Null> _selectorFechaCrear(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
@@ -37,32 +40,34 @@ class _HomeState extends State<Home> {
     _focusNodeFecha.unfocus();
     Navigator.pop(context);
     _showItemDialog(context);
-    if (picked != null) {
-      selectedDate = picked;
-    }
     setState(() {
-      itemControllerFecha.text = parseFecha(selectedDate);
+     if (picked != null) {
+       selectedDate = picked;
+       itemControllerFecha.text = parseFecha(selectedDate);
+     }
     });
   }
 
+  //DatePickerBuscar
   Future<Null> _selectorFechaBuscar(BuildContext context) async {
     final DateTime picked = await showDatePicker(
         context: context,
-        initialDate: selectedDate,
+        initialDate: selectedDateBuscar,
         firstDate: DateTime(DateTime.now().year),
         lastDate: DateTime(DateTime.now().year + 5));
-    volverPrincipal(context);
+        volverPrincipal(context);
     _focusNodeFechaBuscar.unfocus();
-    if (picked != null && picked != selectedDate)
+    if (picked != null)
       setState(() {
-        itemControllerFechaBuqueda.text = parseFecha(picked);
+        itemControllerFechaBusqueda.text = parseFecha(picked);
+        _readItems();
       });
   }
 
   @override
   void initState() {
     super.initState();
-    itemControllerFechaBuqueda.text = parseFecha(DateTime.now());
+    itemControllerFechaBusqueda.text = parseFecha(DateTime.now());
     _readItems();
     _focusNodeFecha.addListener(() {
       _selectorFechaCrear(context);
@@ -97,7 +102,7 @@ class _HomeState extends State<Home> {
             new Padding(
                 padding: EdgeInsets.all(20),
                 child: new TextFormField(
-                  controller: itemControllerFechaBuqueda,
+                  controller: itemControllerFechaBusqueda,
                   autofocus: false,
                   focusNode: _focusNodeFechaBuscar,
                   textAlign: TextAlign.center,
@@ -125,33 +130,37 @@ class _HomeState extends State<Home> {
                 return new Column(
                   children: <Widget>[
                     new Padding(
-                      padding: EdgeInsets.only(right:15,left:15),
+                      padding: EdgeInsets.only(right: 15, left: 15),
                       child: new Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border:
-                        Border.all(color: Colors.white, width: 0, style: BorderStyle.solid),
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(5.0),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: Border.all(
+                              color: Colors.white,
+                              width: 0,
+                              style: BorderStyle.solid),
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(5.0),
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey,
+                                offset: Offset(0, 1),
+                                blurRadius: 3,
+                                spreadRadius: 0)
+                          ],
                         ),
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.grey,
-                              offset: Offset(0, 1),
-                              blurRadius: 3,
-                              spreadRadius: 0)
-                        ],
-                      ),
-                      padding: new EdgeInsets.only(right: 16.0),
-                      child: new ListTile(
-                        onTap: () => _onItemTapped(position),
-                        onLongPress: () => _showDialogUpdate(
-                            context, itemList[position], position),
-                        title: itemList[position],
+                        padding: new EdgeInsets.only(right: 16.0),
+                        child: new ListTile(
+                          onTap: () => _onItemTapped(position),
+                          onLongPress: () => _showDialogUpdate(
+                              context, itemList[position], position),
+                          title: itemList[position],
+                        ),
                       ),
                     ),
-                    ),
-                    new Divider(color: Colors.transparent,)
+                    new Divider(
+                      color: Colors.transparent,
+                    )
                   ],
                 );
               },
@@ -163,61 +172,87 @@ class _HomeState extends State<Home> {
   }
 
   void _showItemDialog(_) {
+    final _formKey = GlobalKey<FormState>();
+    String labelTextFecha = "Añadir Fecha";
     var alert = new AlertDialog(
       content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            new TextFormField(
-              controller: itemControllerObjetivo,
-              autofocus: true,
-              maxLength: 25,
-              minLines: 1,
-              maxLines: 2,
-              decoration: new InputDecoration(
-                labelText: "Añadir Objetivo",
-                hintText: "Insertar Objetivo",
-                icon: new Icon(Icons.title),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              new TextFormField(
+                controller: itemControllerObjetivo,
+                autofocus: false,
+                maxLength: 25,
+                minLines: 1,
+                maxLines: 2,
+                decoration: new InputDecoration(
+                  labelText: "Añadir Objetivo",
+                  hintText: "Insertar Objetivo",
+                  icon: new Icon(Icons.title),
+                ),
               ),
-            ),
-            new TextFormField(
-              controller: itemControllerDescripcion,
-              autofocus: true,
-              maxLength: 50,
-              minLines: 1,
-              maxLines: 2,
-              decoration: new InputDecoration(
-                labelText: "Descripción",
-                hintText: "Insertar Descripción",
-                icon: new Icon(Icons.description),
+              new TextFormField(
+                controller: itemControllerDescripcion,
+                autofocus: false,
+                maxLength: 50,
+                minLines: 1,
+                maxLines: 2,
+                decoration: new InputDecoration(
+                  labelText: "Descripción",
+                  hintText: "Insertar Descripción",
+                  icon: new Icon(Icons.description),
+                ),
               ),
-            ),
-            new TextFormField(
-              controller: itemControllerFecha,
-              autofocus: false,
-              focusNode: _focusNodeFecha,
-              decoration: new InputDecoration(
-                labelText: "Añadir Fecha",
-                icon: new Icon(Icons.calendar_today),
-              ),
-            )
-          ],
+              new TextFormField(
+                controller: itemControllerFecha,
+                autofocus: false,
+                focusNode: _focusNodeFecha,
+                decoration: new InputDecoration(
+                  labelText: labelTextFecha,
+                  icon: new Icon(Icons.calendar_today),
+                ),
+                validator: (texto) {
+                 if(texto.isEmpty){
+                   return "Selecciona una fecha";
+                 }else{
+                   if(texto == "_"){
+                     itemControllerFecha.text="";
+                     return "Alcanzado máximo de objetivos";
+                   }
+                 }
+                 return null;
+                },
+              )
+            ],
+          ),
         ),
       ),
       actions: <Widget>[
         new FlatButton(
             onPressed: () {
-              if (itemControllerObjetivo.text == "") {
-                itemControllerObjetivo.text = "Sin título";
-              }
+              _getConteoFecha(itemControllerFecha.text).then((fecha) {
+                if(fecha>=3){
+                  itemControllerFecha.text = "_";
+                }
+                if (_formKey.currentState.validate()){
+                  _formKey.currentState.save();
+                  if (itemControllerObjetivo.text == "") {
+                    itemControllerObjetivo.text = "Sin título";
+                  }
 
-              _handleSubmitItem(itemControllerObjetivo.text,
-                  itemControllerDescripcion.text, itemControllerFecha.text);
-              itemControllerObjetivo.clear();
-              itemControllerDescripcion.clear();
-              itemControllerFecha.clear();
+                  _handleSubmitItem(itemControllerObjetivo.text,
+                      itemControllerDescripcion.text, itemControllerFecha.text);
+                  itemControllerObjetivo.clear();
+                  itemControllerDescripcion.clear();
+                  itemControllerFecha.clear();
 
-              volverPrincipal(context);
+                  volverPrincipal(context);
+                }
+                SystemChannels.textInput.invokeMethod('TextInput.hide');
+              });
+
             },
             child: new Text("Guardar")),
         new FlatButton(
@@ -248,13 +283,13 @@ class _HomeState extends State<Home> {
         children: <Widget>[
           new Expanded(
               child: new TextField(
-            controller: itemControllerObjetivo,
-            autofocus: true,
-            decoration: new InputDecoration(
-              labelText: "Actualizar Objetivo",
-              icon: new Icon(Icons.note_add),
-            ),
-          ))
+                controller: itemControllerObjetivo,
+                autofocus: false,
+                decoration: new InputDecoration(
+                  labelText: "Actualizar Objetivo",
+                  icon: new Icon(Icons.note_add),
+                ),
+              ))
         ],
       ),
       actions: <Widget>[
@@ -277,6 +312,10 @@ class _HomeState extends State<Home> {
     showDialog(context: _, builder: (_) => alert);
   }
 
+  Future<int> _getConteoFecha(String fecha) async {
+    return await db.getConteoFecha(fecha);
+  }
+
   void _handleSubmitItem(
       String textObjetivo, String textDescripcion, String textFecha) async {
     itemControllerObjetivo.clear();
@@ -284,18 +323,17 @@ class _HomeState extends State<Home> {
     itemControllerFecha.clear();
     String realizado = "Sin realizar";
     ItemObjetivo item = new ItemObjetivo(textObjetivo, textDescripcion,
-        parseFecha(DateTime.now()), parseFecha(selectedDate), realizado);
+        parseFecha(DateTime.now()), textFecha, realizado);
     int itemSavedId = await db.saveItem(item);
-    print(itemSavedId);
     ItemObjetivo itemObjetivo = await db.getItem(itemSavedId);
-    print(itemObjetivo.titulo);
     setState(() {
-      itemList.add(itemObjetivo);
+      _readItems();
     });
   }
 
   void _readItems() async {
-    List items = await db.getItems();
+    List items = await db.getItemsFecha(itemControllerFechaBusqueda.text);
+    itemList.clear();
     items.forEach((noDoItem) {
       ItemObjetivo item = ItemObjetivo.fromMap(noDoItem);
       setState(() {
@@ -314,7 +352,6 @@ class _HomeState extends State<Home> {
     setState(() {
       itemList.removeAt(index);
     });
-    print(rowsDeleted);
   }
 
   void _handleUpdateItem(int index, ItemObjetivo itemObjetivo) async {
@@ -325,6 +362,5 @@ class _HomeState extends State<Home> {
       });
       _readItems();
     });
-    print(rowsUpdated);
   }
 }

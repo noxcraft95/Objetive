@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:objetive/models/nodo_item.dart';
 
 import 'models/Objetivo.dart';
 
@@ -8,19 +9,24 @@ void main() => runApp(new VerObjetivo());
 class VerObjetivo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final ItemObjetivo itemObjetivo = ModalRoute.of(context).settings.arguments;
+
+    print(itemObjetivo);
     return new MaterialApp(
       title: 'Objetivo',
       theme: new ThemeData(
         primarySwatch: Colors.brown,
       ),
-      home: new MyHomePage(title: 'Objetivo'),
+      home: new MyHomePage(title:itemObjetivo.titulo),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+
+  MyHomePage({Key key,this.title, this.itemObjetivo}) : super(key: key);
   final String title;
+  final ItemObjetivo itemObjetivo;
 
   @override
   _MyHomePageState createState() => new _MyHomePageState();
@@ -35,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(widget.title),

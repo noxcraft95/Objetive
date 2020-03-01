@@ -62,6 +62,21 @@ class DatabaseHelper {
     var result = await dbClient.rawQuery("SELECT * FROM $tableName");
     return result.toList();
   }
+  Future<List> getItemsFecha(String fecha) async {
+    var dbClient = await getDb;
+    var result = await dbClient.rawQuery("SELECT * FROM ${tableName} WHERE $columnFechaRealizar LIKE '%$fecha%'");
+    return result.toList();
+  }
+
+  Future<int> getConteoFecha(String fecha) async {
+    var dbClient = await getDb;
+
+    int cont = Sqflite.firstIntValue(
+        await dbClient.rawQuery("SELECT COUNT(*) FROM ${tableName} WHERE $columnFechaRealizar LIKE '%$fecha%'")
+    );
+    return cont;
+  }
+
 
   Future<int> getCount() async {
     var dbClient = await getDb;
@@ -80,7 +95,7 @@ class DatabaseHelper {
   Future<int> deleteItem(int id) async {
     var db = await getDb;
     int rowsDeleted =
-        await db.delete(tableName, where: "$columnId = ?", whereArgs: [id]);
+    await db.delete(tableName, where: "$columnId = ?", whereArgs: [id]);
     return rowsDeleted;
   }
 
