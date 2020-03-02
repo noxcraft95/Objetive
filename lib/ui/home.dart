@@ -348,7 +348,12 @@ class _HomeState extends State<Home> {
 
   void _onItemTapped(int index) {
     Navigator.push(
-        context, MaterialPageRoute(builder: (context) => VerObjetivo()));
+        context, MaterialPageRoute(
+        builder: (context) => VerObjetivo(),
+    settings: RouteSettings(
+    arguments: itemList[index],
+    )));
+
   }
 
   void deleteItem(int id, int index) async {

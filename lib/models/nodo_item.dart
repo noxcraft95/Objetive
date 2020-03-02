@@ -21,6 +21,10 @@ class ItemObjetivo extends StatelessWidget {
 
   ItemObjetivo(this._titulo,this._descripcion ,this._fechaCreacion, this._fechaRealizar, this._realizado);
 
+  set titulo(String value) {
+    _titulo = value;
+  }
+
   ItemObjetivo.map(dynamic obj) {
     this._titulo = obj[keyTitulo];
     this._descripcion = obj[keyDescripcion];
@@ -106,5 +110,29 @@ class ItemObjetivo extends StatelessWidget {
     DatabaseHelper db = new DatabaseHelper();
     int rowsDeleted = await db.deleteItem(id);
     print(rowsDeleted);
+  }
+
+  set descripcion(String value) {
+    _descripcion = value;
+  }
+
+  set planAccion(String value) {
+    _planAccion = value;
+  }
+
+  set fechaCreacion(String value) {
+    _fechaCreacion = value;
+  }
+
+  set fechaRealizar(String value) {
+    _fechaRealizar = value;
+  }
+
+  set id(int value) {
+    _id = value;
+  }
+
+  set realizado(String value) {
+    _realizado = value;
   }
 }
