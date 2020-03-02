@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Objetivo {
-  String id;
+  int id;
   String titulo;
   String descripcion;
   String planAccion;

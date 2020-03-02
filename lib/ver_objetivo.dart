@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:objetive/models/nodo_item.dart';
 
 import 'models/Objetivo.dart';
 
@@ -8,19 +9,24 @@ void main() => runApp(new VerObjetivo());
 class VerObjetivo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final ItemObjetivo itemObjetivo = ModalRoute.of(context).settings.arguments;
+
+    print(itemObjetivo);
     return new MaterialApp(
       title: 'Objetivo',
       theme: new ThemeData(
         primarySwatch: Colors.brown,
       ),
-      home: new MyHomePage(title: 'Objetivo'),
+      home: new MyHomePage(title:itemObjetivo.titulo,itemObjetivo: itemObjetivo,),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+
+  MyHomePage({Key key,this.title, this.itemObjetivo}) : super(key: key);
   final String title;
+  final ItemObjetivo itemObjetivo;
 
   @override
   _MyHomePageState createState() => new _MyHomePageState();
@@ -35,6 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+  print(widget.itemObjetivo);
     return new Scaffold(
       appBar: new AppBar(
         title: new Text(widget.title),
@@ -50,6 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: <Widget>[
                   SizedBox(height: 12),
                   new TextFormField(
+                    initialValue: widget.itemObjetivo.titulo,
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.title, color: Colors.green),
                       hintText: 'Introduce el objetivo',
@@ -61,6 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   SizedBox(height: 12),
                   new TextFormField(
+                    initialValue: widget.itemObjetivo.descripcion,
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.description, color: Colors.green),
                       hintText: 'Descripción del objetivo',
@@ -74,6 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   SizedBox(height: 12),
                   new TextFormField(
+                    initialValue: widget.itemObjetivo.planAccion,
                     decoration: const InputDecoration(
                       icon: const Icon(
                         Icons.pan_tool,
@@ -94,6 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     children: <Widget>[
                       new Flexible(
                         child: new TextFormField(
+                          initialValue: widget.itemObjetivo.fechaCreacion,
                           enabled: false,
                           decoration: const InputDecoration(
                             icon: const Icon(Icons.calendar_today,
@@ -111,6 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       new Flexible(
                         child: new TextFormField(
+                          initialValue: widget.itemObjetivo.fechaRealizar,
                           decoration: const InputDecoration(
                             icon: const Icon(Icons.calendar_today,
                                 color: Colors.green),
@@ -130,16 +142,15 @@ class _MyHomePageState extends State<MyHomePage> {
                       return InputDecorator(
                         decoration: InputDecoration(
                           icon: icono,
-                          labelText: '¿Realizado?',
                         ),
                         isEmpty: realizado == '',
                         child: new DropdownButtonHideUnderline(
                           child: new DropdownButton(
-                            value: realizado,
+                            hint: Text("¿Realizado?"),
+                            value: widget.itemObjetivo.realizado,
                             isDense: true,
                             onChanged: (String newValue) {
                               setState(() {
-                                print(newValue == "Sin realizar");
                                 switch (newValue) {
                                   case "Sin realizar":
                                     icono = Icon(Icons.work, color: Colors.red);
@@ -152,8 +163,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     icono = icono =
                                         Icon(Icons.work, color: Colors.orange);
                                 }
-                                objetivo.realizado = newValue;
-                                realizado = newValue;
+                                widget.itemObjetivo.realizado = newValue;
                                 state.didChange(newValue);
                               });
                             },
