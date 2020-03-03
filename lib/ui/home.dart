@@ -62,6 +62,7 @@ class _HomeState extends State<Home> {
       setState(() {
         //Cargamos la fecha actual en la de crear objetivo
         itemControllerFecha.text = parseFecha(picked);
+        selectedDateBuscar = picked;
         //Actualizamos la fecha de busqueda a la elegida
         itemControllerFechaBusqueda.text = parseFecha(picked);
         _readItems();
@@ -368,13 +369,15 @@ class _HomeState extends State<Home> {
   }
 
   void _readItems() async {
-    List items = await db.getItemsFecha(itemControllerFechaBusqueda.text);
+    List items = await db.getItemsFecha(parseFecha(selectedDateBuscar));
     itemList.clear();
+
     items.forEach((noDoItem) {
       ItemObjetivo item = ItemObjetivo.fromMap(noDoItem);
-      setState(() {
-        itemList.add(item);
-      });
+      itemList.add(item);
+    });
+    setState(() {
+
     });
   }
 
