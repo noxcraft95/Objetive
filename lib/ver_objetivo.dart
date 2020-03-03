@@ -44,6 +44,19 @@ class _MyHomePageState extends State<MyHomePage> {
   print(widget.itemObjetivo);
     return new Scaffold(
       appBar: new AppBar(
+        flexibleSpace: Container(
+          decoration: new BoxDecoration(
+            gradient: new LinearGradient(
+                colors: [
+                  Colors.brown[400],
+                  Colors.brown[900],
+                ],
+                begin: const FractionalOffset(0.0, 0.7),
+                end: const FractionalOffset(1.0, 0.0),
+                stops: [0.0, 1.0],
+                tileMode: TileMode.clamp),
+          ),
+        ),
         title: new Text(widget.title),
       ),
       body: new SafeArea(
