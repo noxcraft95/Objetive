@@ -13,13 +13,13 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   //Principal
   final TextEditingController itemControllerFechaBusqueda =
-  new TextEditingController();
+      new TextEditingController();
 
   //Alert Dialog Crear Objetivo
   final TextEditingController itemControllerObjetivo =
-  new TextEditingController();
+      new TextEditingController();
   final TextEditingController itemControllerDescripcion =
-  new TextEditingController();
+      new TextEditingController();
   final TextEditingController itemControllerFecha = new TextEditingController();
   var db = new DatabaseHelper();
   final List<ItemObjetivo> itemList = <ItemObjetivo>[];
@@ -42,10 +42,10 @@ class _HomeState extends State<Home> {
     Navigator.pop(context);
     _showItemDialog(context);
     setState(() {
-     if (picked != null) {
-       selectedDate = picked;
-       itemControllerFecha.text = parseFecha(selectedDate);
-     }
+      if (picked != null) {
+        selectedDate = picked;
+        itemControllerFecha.text = parseFecha(selectedDate);
+      }
     });
   }
 
@@ -56,10 +56,10 @@ class _HomeState extends State<Home> {
         initialDate: selectedDateBuscar,
         firstDate: DateTime(DateTime.now().year),
         lastDate: DateTime(DateTime.now().year + 5));
-        volverPrincipal(context);
+    volverPrincipal(context);
     _focusNodeFechaBuscar.unfocus();
     if (picked != null)
-      setState((){
+      setState(() {
         //Cargamos la fecha actual en la de crear objetivo
         itemControllerFecha.text = parseFecha(picked);
         //Actualizamos la fecha de busqueda a la elegida
@@ -93,6 +93,19 @@ class _HomeState extends State<Home> {
       backgroundColor: Colors.grey.shade100,
       appBar: new AppBar(
         title: Text("Objetivos"),
+        flexibleSpace: Container(
+          decoration: new BoxDecoration(
+            gradient: new LinearGradient(
+                colors: [
+                  Colors.brown[400],
+                  Colors.brown[900],
+                ],
+                begin: const FractionalOffset(0.0, 0.7),
+                end: const FractionalOffset(1.0, 0.0),
+                stops: [0.0, 1.0],
+                tileMode: TileMode.clamp),
+          ),
+        ),
         centerTitle: true,
       ),
       floatingActionButton: new FloatingActionButton(
@@ -127,49 +140,69 @@ class _HomeState extends State<Home> {
             height: 10,
           ),
           new Expanded(
-            child: new ListView.builder(
-              padding: new EdgeInsets.only(bottom: 72.0),
-              itemCount: itemList.length,
-              itemBuilder: (BuildContext context, int position) {
-                return new Column(
-                  children: <Widget>[
-                    new Padding(
-                      padding: EdgeInsets.only(right: 15, left: 15),
-                      child: new Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                              color: Colors.white,
-                              width: 0,
-                              style: BorderStyle.solid),
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(5.0),
+            child: itemList.isNotEmpty
+                ? new ListView.builder(
+                    padding: new EdgeInsets.only(bottom: 72.0),
+                    itemCount: itemList.length,
+                    itemBuilder: (BuildContext context, int position) {
+                      return new Column(
+                        children: <Widget>[
+                          new Padding(
+                            padding: EdgeInsets.only(right: 15, left: 15),
+                            child: new Container(
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                border: Border.all(
+                                    color: Colors.white,
+                                    width: 0,
+                                    style: BorderStyle.solid),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(5.0),
+                                ),
+                                boxShadow: [
+                                  BoxShadow(
+                                      color: Colors.grey,
+                                      offset: Offset(0, 1),
+                                      blurRadius: 3,
+                                      spreadRadius: 0)
+                                ],
+                              ),
+                              padding: new EdgeInsets.only(right: 16.0),
+                              child: new ListTile(
+                                onTap: () => _onItemTapped(position),
+                                onLongPress: () => _showDialogUpdate(
+                                    context, itemList[position], position),
+                                title: itemList[position],
+                              ),
+                            ),
                           ),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey,
-                                offset: Offset(0, 1),
-                                blurRadius: 3,
-                                spreadRadius: 0)
-                          ],
+                          new Divider(
+                            color: Colors.transparent,
+                          )
+                        ],
+                      );
+                    },
+                  )
+                : SingleChildScrollView(
+                   child:Padding(
+                   padding: EdgeInsets.only(right:50,left:50,bottom: 50),
+                   child: Column(
+                    children: <Widget>[
+                      Text("No hay objetivos para este día",
+                      style: TextStyle(height: 3, fontSize: 18,fontStyle: FontStyle.italic,fontWeight: FontWeight.bold),),
+                      Padding(
+                        padding: EdgeInsets.only(right:50,left:50,bottom: 50),
+                        child:(Image(image: AssetImage('images/noObjetivos.png'),
+                        fit: BoxFit.fitHeight,
+                        )
                         ),
-                        padding: new EdgeInsets.only(right: 16.0),
-                        child: new ListTile(
-                          onTap: () => _onItemTapped(position),
-                          onLongPress: () => _showDialogUpdate(
-                              context, itemList[position], position),
-                          title: itemList[position],
-                        ),
-                      ),
-                    ),
-                    new Divider(
-                      color: Colors.transparent,
-                    )
-                  ],
-                );
-              },
+                ),
+
+                    ],
+                ),
             ),
-          )
+            ),
+          ),
         ],
       ),
     );
@@ -218,15 +251,15 @@ class _HomeState extends State<Home> {
                   icon: new Icon(Icons.calendar_today),
                 ),
                 validator: (texto) {
-                 if(texto.isEmpty){
-                   return "Selecciona una fecha";
-                 }else{
-                   if(texto == "_"){
-                     itemControllerFecha.text="";
-                     return "Alcanzado máximo de objetivos";
-                   }
-                 }
-                 return null;
+                  if (texto.isEmpty) {
+                    return "Selecciona una fecha";
+                  } else {
+                    if (texto == "_") {
+                      itemControllerFecha.text = "";
+                      return "Alcanzado máximo de objetivos";
+                    }
+                  }
+                  return null;
                 },
               )
             ],
@@ -237,10 +270,10 @@ class _HomeState extends State<Home> {
         new FlatButton(
             onPressed: () {
               _getConteoFecha(itemControllerFecha.text).then((fecha) {
-                if(fecha>=3){
+                if (fecha >= 3) {
                   itemControllerFecha.text = "_";
                 }
-                if (_formKey.currentState.validate()){
+                if (_formKey.currentState.validate()) {
                   _formKey.currentState.save();
                   if (itemControllerObjetivo.text == "") {
                     itemControllerObjetivo.text = "Sin título";
@@ -256,7 +289,6 @@ class _HomeState extends State<Home> {
                 }
                 SystemChannels.textInput.invokeMethod('TextInput.hide');
               });
-
             },
             child: new Text("Guardar")),
         new FlatButton(
@@ -287,13 +319,13 @@ class _HomeState extends State<Home> {
         children: <Widget>[
           new Expanded(
               child: new TextField(
-                controller: itemControllerObjetivo,
-                autofocus: false,
-                decoration: new InputDecoration(
-                  labelText: "Actualizar Objetivo",
-                  icon: new Icon(Icons.note_add),
-                ),
-              ))
+            controller: itemControllerObjetivo,
+            autofocus: false,
+            decoration: new InputDecoration(
+              labelText: "Actualizar Objetivo",
+              icon: new Icon(Icons.note_add),
+            ),
+          ))
         ],
       ),
       actions: <Widget>[
@@ -348,12 +380,12 @@ class _HomeState extends State<Home> {
 
   void _onItemTapped(int index) {
     Navigator.push(
-        context, MaterialPageRoute(
-        builder: (context) => VerObjetivo(),
-    settings: RouteSettings(
-    arguments: itemList[index],
-    )));
-
+        context,
+        MaterialPageRoute(
+            builder: (context) => VerObjetivo(),
+            settings: RouteSettings(
+              arguments: itemList[index],
+            )));
   }
 
   void deleteItem(int id, int index) async {
