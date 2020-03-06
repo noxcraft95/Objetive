@@ -133,7 +133,9 @@ class _HomeState extends State<Home> {
                       color: Colors.green,
                       size: 30,
                     ),
-                    border: OutlineInputBorder(),
+                    border: OutlineInputBorder(
+                      borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                    ),
                   ),
                 )),
           ]),

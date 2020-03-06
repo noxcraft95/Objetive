@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:objetive/models/nodo_item.dart';
 
-import 'models/Objetivo.dart';
-
 void main() => runApp(new VerObjetivo());
 
 class VerObjetivo extends StatelessWidget {
@@ -36,7 +34,6 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
   List<String> opcionesRealizado = <String>['', 'Sin realizar', 'Realizado'];
   String realizado = '';
-  Objetivo objetivo = new Objetivo();
   Icon icono = Icon(Icons.work, color: Colors.orange);
 
   @override
