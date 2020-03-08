@@ -5,22 +5,29 @@ import 'package:objetive/utils/database_utils.dart';
 import 'package:objetive/utils/date_formatter.dart';
 import 'package:objetive/ver_objetivo.dart';
 
+
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
+
+
 }
 
 class _HomeState extends State<Home> {
   //Principal
   final TextEditingController itemControllerFechaBusqueda =
       new TextEditingController();
+  String realizado = '';
+
+
 
   //Alert Dialog Crear Objetivo
   final TextEditingController itemControllerObjetivo =
   new TextEditingController();
   final TextEditingController itemControllerDescripcion =
   new TextEditingController();
-  final TextEditingController itemControllerFecha = new TextEditingController();
+  final TextEditingController itemControllerFecha =
+  new TextEditingController();
   var db = new DatabaseHelper();
   final List<ItemObjetivo> itemList = <ItemObjetivo>[];
 
@@ -90,6 +97,12 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final ItemObjetivo itemObjetivo = ModalRoute.of(context).settings.arguments;
+    print("1111111111111111111111111111111111111pacoooooo");
+    print(itemObjetivo);
+
+
+
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: new AppBar(
@@ -141,20 +154,29 @@ class _HomeState extends State<Home> {
           ]),
           new SizedBox(
             height: 10,
+
           ),
           new Expanded(
+
             child: itemList.isNotEmpty
                 ? new ListView.builder(
                     padding: new EdgeInsets.only(bottom: 72.0),
                     itemCount: itemList.length,
                     itemBuilder: (BuildContext context, int position) {
+                      final ItemObjetivo itemObjetivo = ModalRoute.of(context).settings.arguments;
+                      print("1111111111111111111111111111111111111pacoooooo");
+                      print(itemObjetivo);
+                      if(itemObjetivo == "Sin Realizar"){
                       return new Column(
+
                         children: <Widget>[
                           new Padding(
                             padding: EdgeInsets.only(right: 15, left: 15),
                             child: new Container(
                               decoration: BoxDecoration(
-                                color: Colors.white,
+
+                                color: Colors.red,
+
                                 border: Border.all(
                                     color: Colors.white,
                                     width: 0,
@@ -184,6 +206,48 @@ class _HomeState extends State<Home> {
                           )
                         ],
                       );
+                      }else{
+                        return new Column(
+
+                          children: <Widget>[
+                            new Padding(
+                              padding: EdgeInsets.only(right: 15, left: 15),
+                              child: new Container(
+                                decoration: BoxDecoration(
+
+                                  color: Colors.green,
+
+                                  border: Border.all(
+                                      color: Colors.white,
+                                      width: 0,
+                                      style: BorderStyle.solid),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(5.0),
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.grey,
+                                        offset: Offset(0, 1),
+                                        blurRadius: 3,
+                                        spreadRadius: 0)
+                                  ],
+                                ),
+                                padding: new EdgeInsets.only(right: 16.0),
+                                child: new ListTile(
+                                  onTap: () => _onItemTapped(position),
+                                  onLongPress: () => _showDialogUpdate(
+                                      context, itemList[position], position),
+                                  title: itemList[position],
+                                ),
+                              ),
+                            ),
+                            new Divider(
+                              color: Colors.transparent,
+                            )
+                          ],
+                        );
+
+                      }
                     },
                   )
                 : SingleChildScrollView(
@@ -271,6 +335,10 @@ class _HomeState extends State<Home> {
       ),
       actions: <Widget>[
         new FlatButton(
+            onPressed: () => botonVolverCreacion(_),
+            child: new Text("Cancelar")),
+
+        new FlatButton(
             onPressed: () {
               _getConteoFecha(itemControllerFecha.text).then((fecha) {
                 if (fecha >= 3) {
@@ -293,10 +361,8 @@ class _HomeState extends State<Home> {
                 SystemChannels.textInput.invokeMethod('TextInput.hide');
               });
             },
-            child: new Text("Guardar")),
-        new FlatButton(
-            onPressed: () => botonVolverCreacion(_),
-            child: new Text("Cancelar"))
+            child: new Text("Guardar"))
+
       ],
     );
     showDialog(context: _, builder: (_) => alert);
