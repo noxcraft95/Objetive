@@ -98,9 +98,6 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     final ItemObjetivo itemObjetivo = ModalRoute.of(context).settings.arguments;
-    print("1111111111111111111111111111111111111pacoooooo");
-    print(itemObjetivo);
-
 
 
     return Scaffold(
@@ -164,8 +161,6 @@ class _HomeState extends State<Home> {
                     itemCount: itemList.length,
                     itemBuilder: (BuildContext context, int position) {
                       final ItemObjetivo itemObjetivo = ModalRoute.of(context).settings.arguments;
-                      print("1111111111111111111111111111111111111pacoooooo");
-                      print(itemObjetivo);
                       if(itemObjetivo == "Sin Realizar"){
                       return new Column(
 
