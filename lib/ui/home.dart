@@ -5,12 +5,9 @@ import 'package:objetive/utils/database_utils.dart';
 import 'package:objetive/utils/date_formatter.dart';
 import 'package:objetive/ver_objetivo.dart';
 
-
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
-
-
 }
 
 class _HomeState extends State<Home> {
@@ -19,15 +16,12 @@ class _HomeState extends State<Home> {
       new TextEditingController();
   String realizado = '';
 
-
-
   //Alert Dialog Crear Objetivo
   final TextEditingController itemControllerObjetivo =
-  new TextEditingController();
+      new TextEditingController();
   final TextEditingController itemControllerDescripcion =
-  new TextEditingController();
-  final TextEditingController itemControllerFecha =
-  new TextEditingController();
+      new TextEditingController();
+  final TextEditingController itemControllerFecha = new TextEditingController();
   var db = new DatabaseHelper();
   final List<ItemObjetivo> itemList = <ItemObjetivo>[];
 
@@ -40,20 +34,23 @@ class _HomeState extends State<Home> {
   DateTime selectedDateBuscar = DateTime.now();
 
   Future<Null> _selectorFechaCrear(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(DateTime.now().year),
-        lastDate: DateTime(DateTime.now().year + 5));
-    _focusNodeFecha.unfocus();
-    Navigator.pop(context);
-    _showItemDialog(context);
-    setState(() {
-      if (picked != null) {
-        selectedDate = picked;
-        itemControllerFecha.text = parseFecha(selectedDate);
-      }
-    });
+      final DateTime picked = await showDatePicker(
+          context: context,
+          initialDate: selectedDate,
+          firstDate: DateTime(DateTime
+              .now()
+              .year),
+          lastDate: DateTime(DateTime
+              .now()
+              .year + 5));
+      _focusNodeFecha.unfocus();
+      _showItemDialog(context);
+      setState(() {
+        if (picked != null) {
+          selectedDate = picked;
+          itemControllerFecha.text = parseFecha(selectedDate);
+        }
+      });
   }
 
   //DatePickerBuscar
@@ -81,29 +78,28 @@ class _HomeState extends State<Home> {
     super.initState();
     itemControllerFechaBusqueda.text = parseFecha(DateTime.now());
     _readItems();
-    _focusNodeFecha.addListener(() {
-      _selectorFechaCrear(context);
-    });
-    _focusNodeFechaBuscar.addListener(() {
-      _selectorFechaBuscar(context);
-    });
-  }
 
-  @override
-  void dispose() {
-    _focusNodeFecha.dispose();
-    super.dispose();
+    if (!_focusNodeFecha.hasListeners) {
+      _focusNodeFecha.addListener(() {
+        _selectorFechaCrear(context);
+      });
+    }
+    if (!_focusNodeFechaBuscar.hasListeners) {
+      _focusNodeFechaBuscar.addListener(() {
+          _selectorFechaBuscar(context);
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final ItemObjetivo itemObjetivo = ModalRoute.of(context).settings.arguments;
 
-
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: new AppBar(
         title: Text("Objetivos"),
+        automaticallyImplyLeading: false,
         flexibleSpace: Container(
           decoration: new BoxDecoration(
             gradient: new LinearGradient(
@@ -144,34 +140,32 @@ class _HomeState extends State<Home> {
                       size: 30,
                     ),
                     border: OutlineInputBorder(
-                      borderRadius: const BorderRadius.all(Radius.circular(10.0)),
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(10.0)),
                     ),
                   ),
                 )),
           ]),
           new SizedBox(
             height: 10,
-
           ),
           new Expanded(
-
             child: itemList.isNotEmpty
                 ? new ListView.builder(
                     padding: new EdgeInsets.only(bottom: 72.0),
                     itemCount: itemList.length,
                     itemBuilder: (BuildContext context, int position) {
-                      final ItemObjetivo itemObjetivo = ModalRoute.of(context).settings.arguments;
-                      if(itemObjetivo == "Sin Realizar"){
+                      final ItemObjetivo itemObjetivo = itemList[position];
                       return new Column(
-
                         children: <Widget>[
                           new Padding(
                             padding: EdgeInsets.only(right: 15, left: 15),
                             child: new Container(
                               decoration: BoxDecoration(
-
-                                color: Colors.red,
-
+                                color: itemObjetivo.realizado.toLowerCase() ==
+                                        ("sin realizar")
+                                    ? Colors.red[500]
+                                    : Colors.green[500],
                                 border: Border.all(
                                     color: Colors.white,
                                     width: 0,
@@ -190,8 +184,7 @@ class _HomeState extends State<Home> {
                               padding: new EdgeInsets.only(right: 16.0),
                               child: new ListTile(
                                 onTap: () => _onItemTapped(position),
-                                onLongPress: () => _showDialogUpdate(
-                                    context, itemList[position], position),
+                                onLongPress: () => null,
                                 title: itemList[position],
                               ),
                             ),
@@ -201,69 +194,33 @@ class _HomeState extends State<Home> {
                           )
                         ],
                       );
-                      }else{
-                        return new Column(
-
-                          children: <Widget>[
-                            new Padding(
-                              padding: EdgeInsets.only(right: 15, left: 15),
-                              child: new Container(
-                                decoration: BoxDecoration(
-
-                                  color: Colors.green,
-
-                                  border: Border.all(
-                                      color: Colors.white,
-                                      width: 0,
-                                      style: BorderStyle.solid),
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(5.0),
-                                  ),
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.grey,
-                                        offset: Offset(0, 1),
-                                        blurRadius: 3,
-                                        spreadRadius: 0)
-                                  ],
-                                ),
-                                padding: new EdgeInsets.only(right: 16.0),
-                                child: new ListTile(
-                                  onTap: () => _onItemTapped(position),
-                                  onLongPress: () => _showDialogUpdate(
-                                      context, itemList[position], position),
-                                  title: itemList[position],
-                                ),
-                              ),
-                            ),
-                            new Divider(
-                              color: Colors.transparent,
-                            )
-                          ],
-                        );
-
-                      }
                     },
                   )
                 : SingleChildScrollView(
-                   child:Padding(
-                   padding: EdgeInsets.only(right:50,left:50,bottom: 50),
-                   child: Column(
-                    children: <Widget>[
-                      Text("No hay objetivos para este día",
-                      style: TextStyle(height: 3, fontSize: 18,fontStyle: FontStyle.italic,fontWeight: FontWeight.bold),),
-                      Padding(
-                        padding: EdgeInsets.only(right:50,left:50,bottom: 50),
-                        child:(Image(image: AssetImage('images/noObjetivos.png'),
-                        fit: BoxFit.fitHeight,
-                        )
-                        ),
-                ),
-
-                    ],
-                ),
-            ),
-            ),
+                    child: Padding(
+                      padding: EdgeInsets.only(right: 50, left: 50, bottom: 50),
+                      child: Column(
+                        children: <Widget>[
+                          Text(
+                            "No hay objetivos para este día",
+                            style: TextStyle(
+                                height: 3,
+                                fontSize: 18,
+                                fontStyle: FontStyle.italic,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(
+                                right: 50, left: 50, bottom: 50),
+                            child: (Image(
+                              image: AssetImage('images/noObjetivos.png'),
+                              fit: BoxFit.fitHeight,
+                            )),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
           ),
         ],
       ),
@@ -332,7 +289,6 @@ class _HomeState extends State<Home> {
         new FlatButton(
             onPressed: () => botonVolverCreacion(_),
             child: new Text("Cancelar")),
-
         new FlatButton(
             onPressed: () {
               _getConteoFecha(itemControllerFecha.text).then((fecha) {
@@ -357,7 +313,6 @@ class _HomeState extends State<Home> {
               });
             },
             child: new Text("Guardar"))
-
       ],
     );
     showDialog(context: _, builder: (_) => alert);
@@ -374,42 +329,6 @@ class _HomeState extends State<Home> {
     itemControllerDescripcion.clear();
     itemControllerFecha.clear();
     volverPrincipal(_);
-  }
-
-  void _showDialogUpdate(_, ItemObjetivo item, int index) {
-    itemControllerObjetivo.text = item.titulo;
-    var alert = new AlertDialog(
-      content: new Row(
-        children: <Widget>[
-          new Expanded(
-              child: new TextField(
-            controller: itemControllerObjetivo,
-            autofocus: false,
-            decoration: new InputDecoration(
-              labelText: "Actualizar Objetivo",
-              icon: new Icon(Icons.note_add),
-            ),
-          ))
-        ],
-      ),
-      actions: <Widget>[
-        new FlatButton(
-            onPressed: () async {
-              ItemObjetivo itemNew = new ItemObjetivo.fromMap({
-                "item_name": itemControllerObjetivo.text,
-                "date_created": dateFormatted(),
-                "id": item.id
-              });
-              _handleUpdateItem(index, itemNew);
-              itemControllerObjetivo.clear();
-              Navigator.pop(context);
-            },
-            child: new Text("Actualizar")),
-        new FlatButton(
-            onPressed: () => Navigator.pop(_), child: new Text("Cancelar"))
-      ],
-    );
-    showDialog(context: _, builder: (_) => alert);
   }
 
   Future<int> _getConteoFecha(String fecha) async {
@@ -439,35 +358,21 @@ class _HomeState extends State<Home> {
       ItemObjetivo item = ItemObjetivo.fromMap(noDoItem);
       itemList.add(item);
     });
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   void _onItemTapped(int index) {
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => VerObjetivo(),
-            settings: RouteSettings(
-              arguments: itemList[index],
-            )));
+    Navigator.pushNamed(context, '/verObjetivo',arguments: itemList[index]).then((value) {
+      setState(() {
+        _readItems();
+      });
+    });
   }
 
   void deleteItem(int id, int index) async {
     int rowsDeleted = await db.deleteItem(id);
     setState(() {
       itemList.removeAt(index);
-    });
-  }
-
-  void _handleUpdateItem(int index, ItemObjetivo itemObjetivo) async {
-    int rowsUpdated = await db.updateItem(itemObjetivo);
-    setState(() {
-      itemList.removeWhere((element) {
-        itemList[index].titulo == itemObjetivo.titulo;
-      });
-      _readItems();
     });
   }
 }

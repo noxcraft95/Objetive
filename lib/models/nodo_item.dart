@@ -69,29 +69,6 @@ class ItemObjetivo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    /*return new Container(
-      padding: new EdgeInsets.all(8.0),
-      child: new Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          new Text(
-            _itemName,
-            style: new TextStyle(
-                color: Colors.black54,
-                fontWeight: FontWeight.bold,
-                fontSize: 16.0),
-          ),
-          new Container(
-            margin: const EdgeInsets.only(top: 5.0),
-            child: new Text(
-              "Created on $_dateCreated",
-              style: new TextStyle(fontSize: 14.0,
-                  fontStyle: FontStyle.italic),
-            ),
-          )
-        ],
-      ),
-    );*/
     return new ListTile(
       leading: new CircleAvatar(
         backgroundColor: Colors.orange,
