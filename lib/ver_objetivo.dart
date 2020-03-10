@@ -1,8 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:objetive/models/nodo_item.dart';
-
-import 'models/Objetivo.dart';
+import 'package:objetive/ui/home.dart';
+import 'package:objetive/utils/database_utils.dart';
+import 'package:objetive/utils/date_formatter.dart';
 
 void main() => runApp(new VerObjetivo());
 
@@ -11,20 +13,15 @@ class VerObjetivo extends StatelessWidget {
   Widget build(BuildContext context) {
     final ItemObjetivo itemObjetivo = ModalRoute.of(context).settings.arguments;
 
-    print(itemObjetivo);
-    return new MaterialApp(
-      title: 'Objetivo',
-      theme: new ThemeData(
-        primarySwatch: Colors.brown,
-      ),
-      home: new MyHomePage(title:itemObjetivo.titulo,itemObjetivo: itemObjetivo,),
+    return new MyHomePage(
+      title: itemObjetivo.titulo,
+      itemObjetivo: itemObjetivo,
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-
-  MyHomePage({Key key,this.title, this.itemObjetivo}) : super(key: key);
+  MyHomePage({Key key, this.title, this.itemObjetivo}) : super(key: key);
   final String title;
   final ItemObjetivo itemObjetivo;
 
@@ -34,16 +31,82 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
-  List<String> opcionesRealizado = <String>['', 'Sin realizar', 'Realizado'];
-  String realizado = '';
-  Objetivo objetivo = new Objetivo();
+
+  List<String> opcionesRealizado = <String>['Sin realizar', 'Realizado'];
   Icon icono = Icon(Icons.work, color: Colors.orange);
+
+  final FocusNode _fnFechaRealizar = FocusNode();
+
+  DateTime selectedDate = DateTime.now();
+  TextEditingController textTitulo = new TextEditingController();
+  TextEditingController textDescripcion = new TextEditingController();
+  TextEditingController textPlanAccion = new TextEditingController();
+  TextEditingController textFechaRealizar = new TextEditingController();
+  String realizado;
+
+  Future<Null> _selectorFechaBuscar(BuildContext context) async {
+    if (_fnFechaRealizar.hasFocus) {
+      final DateTime picked = await showDatePicker(
+          context: context,
+          initialDate: selectedDate,
+          firstDate: DateTime(DateTime.now().year),
+          lastDate: DateTime(DateTime.now().year + 5));
+      _fnFechaRealizar.unfocus();
+      if (picked != null)
+        setState(() {
+          textFechaRealizar.text = parseFecha(picked);
+          selectedDate = picked;
+        });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    textTitulo.text = widget.itemObjetivo.titulo;
+    textDescripcion.text = widget.itemObjetivo.descripcion;
+    textPlanAccion.text = widget.itemObjetivo.planAccion;
+    textFechaRealizar.text = widget.itemObjetivo.fechaRealizar;
+    realizado = widget.itemObjetivo.realizado;
+
+    if (!_fnFechaRealizar.hasListeners) {
+      _fnFechaRealizar.addListener(() {
+        _selectorFechaBuscar(context);
+      });
+    }
+  }
+
+  void editarObjetivo() async {
+    widget.itemObjetivo.titulo = textTitulo.text;
+    widget.itemObjetivo.descripcion = textDescripcion.text;
+    widget.itemObjetivo.planAccion = textPlanAccion.text;
+    widget.itemObjetivo.fechaRealizar = textFechaRealizar.text;
+    widget.itemObjetivo.realizado = realizado;
+    var db = new DatabaseHelper();
+    int itemSavedId = await db.updateItem(widget.itemObjetivo);
+
+    Navigator.push(context, MaterialPageRoute(builder: (context) => Home()));
+  }
+
+  void volverPrincipal(_) {
+    while (Navigator.canPop(_)) {
+      Navigator.pop(_);
+    }
+  }
+
+  void volver(context) {
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
-  print(widget.itemObjetivo);
     return new Scaffold(
       appBar: new AppBar(
+        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => volver(context),
+        ),
         flexibleSpace: Container(
           decoration: new BoxDecoration(
             gradient: new LinearGradient(
@@ -70,7 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 children: <Widget>[
                   SizedBox(height: 12),
                   new TextFormField(
-                    initialValue: widget.itemObjetivo.titulo,
+                    controller: textTitulo,
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.title, color: Colors.green),
                       hintText: 'Introduce el objetivo',
@@ -82,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   SizedBox(height: 12),
                   new TextFormField(
-                    initialValue: widget.itemObjetivo.descripcion,
+                    controller: textDescripcion,
                     decoration: const InputDecoration(
                       icon: const Icon(Icons.description, color: Colors.green),
                       hintText: 'Descripción del objetivo',
@@ -96,11 +159,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                   SizedBox(height: 12),
                   new TextFormField(
-                    initialValue: widget.itemObjetivo.planAccion,
+                    controller: textPlanAccion,
                     decoration: const InputDecoration(
                       icon: const Icon(
                         Icons.pan_tool,
-                        color: Colors.orange,
+                        color: Colors.green,
                       ),
                       hintText: 'Plan de acción',
                       labelText: 'Plan de acción',
@@ -135,7 +198,9 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                       new Flexible(
                         child: new TextFormField(
-                          initialValue: widget.itemObjetivo.fechaRealizar,
+                          controller: textFechaRealizar,
+                          focusNode: _fnFechaRealizar,
+                          autofocus: false,
                           decoration: const InputDecoration(
                             icon: const Icon(Icons.calendar_today,
                                 color: Colors.green),
@@ -144,7 +209,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             filled: true,
                             border: UnderlineInputBorder(),
                           ),
-                          keyboardType: TextInputType.datetime,
                           maxLength: 10,
                         ),
                       ),
@@ -156,11 +220,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         decoration: InputDecoration(
                           icon: icono,
                         ),
-                        isEmpty: realizado == '',
                         child: new DropdownButtonHideUnderline(
                           child: new DropdownButton(
                             hint: Text("¿Realizado?"),
-                            value: widget.itemObjetivo.realizado,
+                            value: realizado,
                             isDense: true,
                             onChanged: (String newValue) {
                               setState(() {
@@ -176,7 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                     icono = icono =
                                         Icon(Icons.work, color: Colors.orange);
                                 }
-                                widget.itemObjetivo.realizado = newValue;
+                                realizado = newValue;
                                 state.didChange(newValue);
                               });
                             },
@@ -192,10 +255,17 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                   ),
                   new Container(
-                      padding: const EdgeInsets.only(left: 40.0, top: 20.0),
+                      padding: const EdgeInsets.only(
+                          left: 40.0, right: 40.0, top: 20.0),
                       child: new RaisedButton(
-                        child: const Text('Editar'),
-                        onPressed: null,
+                        color: Colors.green,
+                        elevation: 5,
+                        child: const Text('Editar',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16)),
+                        onPressed: () => editarObjetivo(),
                       )),
                 ],
               ))),
