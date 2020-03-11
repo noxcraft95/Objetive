@@ -86,7 +86,6 @@ class ItemObjetivo extends StatelessWidget {
   void deleteItem(int id) async {
     DatabaseHelper db = new DatabaseHelper();
     int rowsDeleted = await db.deleteItem(id);
-    print(rowsDeleted);
   }
 
   set descripcion(String value) {
