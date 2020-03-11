@@ -34,6 +34,7 @@ class _HomeState extends State<Home> {
   DateTime selectedDateBuscar = DateTime.now();
 
   Future<Null> _selectorFechaCrear(BuildContext context) async {
+    if(_focusNodeFecha.hasFocus) {
       final DateTime picked = await showDatePicker(
           context: context,
           initialDate: selectedDate,
@@ -44,13 +45,13 @@ class _HomeState extends State<Home> {
               .now()
               .year + 5));
       _focusNodeFecha.unfocus();
-      _showItemDialog(context);
       setState(() {
         if (picked != null) {
           selectedDate = picked;
           itemControllerFecha.text = parseFecha(selectedDate);
         }
       });
+    }
   }
 
   //DatePickerBuscar
