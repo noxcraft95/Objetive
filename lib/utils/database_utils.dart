@@ -52,7 +52,6 @@ class DatabaseHelper {
 
   Future<int> saveItem(ItemObjetivo item) async {
     var dbClient = await getDb;
-    print(item.toMap());
     int rowsSaved = await dbClient.insert(tableName, item.toMap());
     return rowsSaved;
   }
@@ -101,7 +100,6 @@ class DatabaseHelper {
 
   Future<int> updateItem(ItemObjetivo item) async {
     int id = item.id;
-    print("id of the item is $id");
     var db = await getDb;
     int rowsUpdated = await db.update("$tableName", item.toMap(),
         where: "$columnId  = ?", whereArgs: [item.id]);

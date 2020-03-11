@@ -184,7 +184,7 @@ class _HomeState extends State<Home> {
                               padding: new EdgeInsets.only(right: 16.0),
                               child: new ListTile(
                                 onTap: () => _onItemTapped(position),
-                                onLongPress: () => null,
+                                onLongPress: () => _showDialogBorrar(context,itemList[position],position),
                                 title: itemList[position],
                               ),
                             ),
@@ -317,6 +317,36 @@ class _HomeState extends State<Home> {
     );
     showDialog(context: _, builder: (_) => alert);
   }
+
+  void _showDialogBorrar(_,ItemObjetivo item, index) {
+    final _formKey = GlobalKey<FormState>();
+    String labelTextFecha = "Añadir Fecha";
+    var alert = new AlertDialog(
+      content: Container(
+        child: Text("¿Desea eliminar el objetivo?", textAlign: TextAlign.center),
+      ),
+      actions: <Widget>[
+        new  FlatButton.icon(
+            icon: Icon(Icons.arrow_back),
+            color: Colors.blue,
+            textColor: Colors.white,
+            onPressed: () => botonVolverCreacion(_),
+            label: Text('Cancelar')),
+        new FlatButton.icon(
+            icon: Icon(Icons.do_not_disturb),
+            color: Colors.blue,
+            textColor: Colors.white,
+            onPressed: () {
+              deleteItem(item.id, index);
+              botonVolverCreacion(_);
+            },
+            label: Text('Eliminar')),
+      ],
+    );
+    showDialog(context: _, builder: (_) => alert);
+  }
+
+
 
   void volverPrincipal(_) {
     while (Navigator.canPop(context)) {
