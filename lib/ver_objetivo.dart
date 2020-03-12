@@ -5,6 +5,8 @@ import 'package:objetive/models/nodo_item.dart';
 import 'package:objetive/ui/home.dart';
 import 'package:objetive/utils/database_utils.dart';
 import 'package:objetive/utils/date_formatter.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 
 void main() => runApp(new VerObjetivo());
 
@@ -43,6 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController textPlanAccion = new TextEditingController();
   TextEditingController textFechaRealizar = new TextEditingController();
   String realizado;
+  var db = new DatabaseHelper();
 
   Future<Null> _selectorFechaBuscar(BuildContext context) async {
     if (_fnFechaRealizar.hasFocus) {
@@ -53,11 +56,28 @@ class _MyHomePageState extends State<MyHomePage> {
           lastDate: DateTime(DateTime.now().year + 5));
       _fnFechaRealizar.unfocus();
       if (picked != null)
-        setState(() {
-          textFechaRealizar.text = parseFecha(picked);
-          selectedDate = picked;
+        await db.getConteoFecha(parseFecha(picked)).then((fecha) {
+          if (fecha >= 3) {
+            showToast("La fecha alcanzó el límite de objetivos");
+          } else {
+            setState(() {
+              textFechaRealizar.text = parseFecha(picked);
+              selectedDate = picked;
+            });
+          }
         });
     }
+  }
+
+  void showToast(String text) {
+    Fluttertoast.showToast(
+        msg: text,
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIos: 2,
+        backgroundColor: Colors.red,
+        textColor: Colors.white
+    );
   }
 
   @override
@@ -77,7 +97,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void editarObjetivo() async {
-    widget.itemObjetivo.titulo = textTitulo.text;
+    if(textTitulo.text.length > 0){
+      widget.itemObjetivo.titulo = textTitulo.text;
+    }else{
+      widget.itemObjetivo.titulo = "Sin título";
+    }
     widget.itemObjetivo.descripcion = textDescripcion.text;
     widget.itemObjetivo.planAccion = textPlanAccion.text;
     widget.itemObjetivo.fechaRealizar = textFechaRealizar.text;
