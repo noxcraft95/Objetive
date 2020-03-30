@@ -5,42 +5,37 @@ import 'package:Objective/utils/database_utils.dart';
 import 'package:Objective/utils/date_formatter.dart';
 import 'package:Objective/ver_objetivo.dart';
 
-class Home extends StatefulWidget {
+class Historico extends StatefulWidget {
   @override
-  _HomeState createState() => _HomeState();
+  _HistoricoState createState() => _HistoricoState();
 }
 
-class _HomeState extends State<Home> {
+class _HistoricoState extends State<Historico> {
   //Principal
-  final TextEditingController itemControllerFechaBusqueda =
+  final TextEditingController itemControllerFechaHasta =
       new TextEditingController();
   String realizado = '';
 
-  //Alert Dialog Crear Objetivo
-  final TextEditingController itemControllerObjetivo =
-      new TextEditingController();
-  final TextEditingController itemControllerDescripcion =
-      new TextEditingController();
   final TextEditingController itemControllerFecha = new TextEditingController();
   var db = new DatabaseHelper();
   final List<ItemObjetivo> itemList = <ItemObjetivo>[];
 
   //DatePicker
-  final FocusNode _focusNodeFecha = FocusNode();
-  final FocusNode _focusNodeFechaBuscar = FocusNode();
+  final FocusNode _focusNodeFechaDesde = FocusNode();
+  final FocusNode _focusNodeFechaHasta = FocusNode();
 
-  //DatePickerCrear
-  DateTime selectedDate = DateTime.now();
-  DateTime selectedDateBuscar = DateTime.now();
+  //DatePickerDesde
+  DateTime selectedDate = DateTime(DateTime.now().year);
+  DateTime selectedDateHasta = DateTime.now();
 
-  Future<Null> _selectorFechaCrear(BuildContext context) async {
-    if (_focusNodeFecha.hasFocus) {
+  Future<Null> _selectorFechaDesde(BuildContext context) async {
+    if (_focusNodeFechaDesde.hasFocus) {
       final DateTime picked = await showDatePicker(
           context: context,
           initialDate: selectedDate,
-          firstDate: DateTime(DateTime.now().year),
+          firstDate: DateTime(DateTime.now().year - 5),
           lastDate: DateTime(DateTime.now().year + 5));
-      _focusNodeFecha.unfocus();
+      _focusNodeFechaDesde.unfocus();
       setState(() {
         if (picked != null) {
           selectedDate = picked;
@@ -52,37 +47,41 @@ class _HomeState extends State<Home> {
 
   //DatePickerBuscar
   Future<Null> _selectorFechaBuscar(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDateBuscar,
-        firstDate: DateTime(DateTime.now().year),
-        lastDate: DateTime(DateTime.now().year + 5));
-    volverPrincipal(context);
-    _focusNodeFechaBuscar.unfocus();
-    if (picked != null)
-      setState(() {
-        //Cargamos la fecha actual en la de crear objetivo
-        itemControllerFecha.text = parseFecha(picked);
-        selectedDateBuscar = picked;
-        //Actualizamos la fecha de busqueda a la elegida
-        itemControllerFechaBusqueda.text = parseFecha(picked);
-        _readItems();
-      });
+    if (_focusNodeFechaHasta.hasFocus) {
+      final DateTime picked = await showDatePicker(
+          context: context,
+          initialDate: selectedDateHasta,
+          firstDate: DateTime(DateTime
+              .now()
+              .year - 5),
+          lastDate: DateTime(DateTime
+              .now()
+              .year + 5));
+      _focusNodeFechaHasta.unfocus();
+      if (picked != null)
+        setState(() {
+          //Cargamos la fecha actual en la de crear objetivo
+          itemControllerFecha.text = parseFecha(picked);
+          selectedDateHasta = picked;
+          _readItems();
+        });
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    itemControllerFechaBusqueda.text = parseFecha(DateTime.now());
+    itemControllerFecha.text = parseFecha(selectedDate);
+    itemControllerFechaHasta.text = parseFecha(selectedDateHasta);
     _readItems();
 
-    if (!_focusNodeFecha.hasListeners) {
-      _focusNodeFecha.addListener(() {
-        _selectorFechaCrear(context);
+    if (!_focusNodeFechaDesde.hasListeners) {
+      _focusNodeFechaDesde.addListener(() {
+        _selectorFechaDesde(context);
       });
     }
-    if (!_focusNodeFechaBuscar.hasListeners) {
-      _focusNodeFechaBuscar.addListener(() {
+    if (!_focusNodeFechaHasta.hasListeners) {
+      _focusNodeFechaHasta.addListener(() {
         _selectorFechaBuscar(context);
       });
     }
@@ -95,18 +94,12 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: new AppBar(
-        title: Text("Objetivos"),
+        title: Text("Histórico"),
         automaticallyImplyLeading: false,
-        actions: <Widget>[
-          // action button
-            IconButton(
-              icon: new Icon(Icons.date_range,color: Colors.green,size: 36,),
-              onPressed: () {
-                Navigator.pushNamed(context, '/historico');
-              },
-              padding: EdgeInsets.only(right: 60),
-            ),
-        ],
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => volverPrincipal(context),
+        ),
         flexibleSpace: Container(
           decoration: new BoxDecoration(
             gradient: new LinearGradient(
@@ -122,27 +115,23 @@ class _HomeState extends State<Home> {
         ),
         centerTitle: true,
       ),
-      floatingActionButton: new FloatingActionButton(
-        backgroundColor: Colors.green,
-        onPressed: () => _showItemDialog(context),
-        child: new Icon(Icons.add),
-      ),
       body: new Column(
         children: <Widget>[
-          new Column(children: <Widget>[
-            new Padding(
-                padding: EdgeInsets.all(20),
-                child: new TextFormField(
-                  controller: itemControllerFechaBusqueda,
+          Row(
+            children: <Widget>[
+              Flexible(
+                child: Padding( padding: EdgeInsets.all(20),
+                  child:new TextFormField(
+                  controller: itemControllerFecha,
                   autofocus: false,
-                  focusNode: _focusNodeFechaBuscar,
+                  focusNode: _focusNodeFechaDesde,
                   textAlign: TextAlign.center,
                   decoration: new InputDecoration(
                     fillColor: Colors.green[100],
                     filled: true,
                     contentPadding: EdgeInsets.all(10),
                     icon: new Icon(
-                      Icons.search,
+                      Icons.calendar_today,
                       color: Colors.green,
                       size: 30,
                     ),
@@ -151,8 +140,37 @@ class _HomeState extends State<Home> {
                           const BorderRadius.all(Radius.circular(10.0)),
                     ),
                   ),
-                )),
-          ]),
+                ),
+    ),
+              ),
+              Flexible(
+                child: Padding( 
+                  padding: EdgeInsets.all(20),
+                  child: new TextFormField(
+                  controller: itemControllerFechaHasta,
+                  autofocus: false,
+                  focusNode: _focusNodeFechaHasta,
+                  textAlign: TextAlign.center,
+                  decoration: new InputDecoration(
+                    icon: new Icon(
+                      Icons.calendar_today,
+                      color: Colors.green,
+                      size: 30,
+                    ),
+                    fillColor: Colors.green[100],
+                    filled: true,
+                    contentPadding: EdgeInsets.all(10),
+                    border: OutlineInputBorder(
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(10.0)),
+                    ),
+                  ),
+                ),
+                ),
+              ),
+            ],
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
           new SizedBox(
             height: 10,
           ),
@@ -210,7 +228,7 @@ class _HomeState extends State<Home> {
                       child: Column(
                         children: <Widget>[
                           Text(
-                            "No hay objetivos para este día",
+                            "No hay objetivos para este intervalo",
                             style: TextStyle(
                                 height: 3,
                                 fontSize: 18,
@@ -235,95 +253,10 @@ class _HomeState extends State<Home> {
     );
   }
 
-  void _showItemDialog(_) {
-    final _formKey = GlobalKey<FormState>();
-    String labelTextFecha = "Añadir Fecha";
-    var alert = new AlertDialog(
-      content: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              new TextFormField(
-                controller: itemControllerObjetivo,
-                autofocus: false,
-                maxLength: 25,
-                minLines: 1,
-                maxLines: 2,
-                decoration: new InputDecoration(
-                  labelText: "Añadir Objetivo",
-                  hintText: "Insertar Objetivo",
-                  icon: new Icon(Icons.title),
-                ),
-              ),
-              new TextFormField(
-                controller: itemControllerDescripcion,
-                autofocus: false,
-                maxLength: 50,
-                minLines: 1,
-                maxLines: 2,
-                decoration: new InputDecoration(
-                  labelText: "Descripción",
-                  hintText: "Insertar Descripción",
-                  icon: new Icon(Icons.description),
-                ),
-              ),
-              new TextFormField(
-                controller: itemControllerFecha,
-                autofocus: false,
-                focusNode: _focusNodeFecha,
-                decoration: new InputDecoration(
-                  labelText: labelTextFecha,
-                  icon: new Icon(Icons.calendar_today),
-                ),
-                validator: (texto) {
-                  if (texto.isEmpty) {
-                    return "Selecciona una fecha";
-                  } else {
-                    if (texto == "_") {
-                      itemControllerFecha.text = "";
-                      return "Alcanzado máximo de objetivos";
-                    }
-                  }
-                  return null;
-                },
-              )
-            ],
-          ),
-        ),
-      ),
-      actions: <Widget>[
-        new FlatButton(
-            onPressed: () => botonVolverCreacion(_),
-            child: new Text("Cancelar")),
-        new FlatButton(
-            onPressed: () {
-              _getConteoFecha(itemControllerFecha.text).then((fecha) {
-                if (fecha >= 3) {
-                  itemControllerFecha.text = "_";
-                }
-                if (_formKey.currentState.validate()) {
-                  _formKey.currentState.save();
-                  if (itemControllerObjetivo.text == "") {
-                    itemControllerObjetivo.text = "Sin título";
-                  }
-
-                  _handleSubmitItem(itemControllerObjetivo.text,
-                      itemControllerDescripcion.text, itemControllerFecha.text);
-                  itemControllerObjetivo.clear();
-                  itemControllerDescripcion.clear();
-                  itemControllerFecha.clear();
-
-                  volverPrincipal(context);
-                }
-                SystemChannels.textInput.invokeMethod('TextInput.hide');
-              });
-            },
-            child: new Text("Guardar"))
-      ],
-    );
-    showDialog(context: _, builder: (_) => alert);
+  void volverPrincipal(_) {
+    while (Navigator.canPop(context)) {
+      Navigator.pop(context);
+    }
   }
 
   void _showDialogBorrar(_, ItemObjetivo item, index) {
@@ -339,7 +272,7 @@ class _HomeState extends State<Home> {
             icon: Icon(Icons.arrow_back),
             color: Colors.blue,
             textColor: Colors.white,
-            onPressed: () => botonVolverCreacion(_),
+            onPressed: () => volverPrincipal(_),
             label: Text('Cancelar')),
         new FlatButton.icon(
             icon: Icon(Icons.do_not_disturb),
@@ -347,7 +280,7 @@ class _HomeState extends State<Home> {
             textColor: Colors.white,
             onPressed: () {
               deleteItem(item.id, index);
-              botonVolverCreacion(_);
+              volverPrincipal(_);
             },
             label: Text('Eliminar')),
       ],
@@ -355,38 +288,13 @@ class _HomeState extends State<Home> {
     showDialog(context: _, builder: (_) => alert);
   }
 
-  void volverPrincipal(_) {
-      Navigator.pop(context);
-  }
-
-  void botonVolverCreacion(_) {
-    itemControllerObjetivo.clear();
-    itemControllerDescripcion.clear();
-    itemControllerFecha.clear();
-    volverPrincipal(_);
-  }
-
   Future<int> _getConteoFecha(String fecha) async {
     return await db.getConteoFecha(fecha);
   }
 
-  void _handleSubmitItem(
-      String textObjetivo, String textDescripcion, String textFecha) async {
-    itemControllerObjetivo.clear();
-    itemControllerDescripcion.clear();
-    itemControllerFecha.clear();
-    String realizado = "Sin realizar";
-    ItemObjetivo item = new ItemObjetivo(textObjetivo, textDescripcion,
-        parseFecha(DateTime.now()), textFecha, realizado);
-    int itemSavedId = await db.saveItem(item);
-    ItemObjetivo itemObjetivo = await db.getItem(itemSavedId);
-    setState(() {
-      _readItems();
-    });
-  }
-
   void _readItems() async {
-    List items = await db.getItemsFecha(parseFecha(selectedDateBuscar));
+    List items = await db.getItemsRangoFecha(
+        parseFecha(selectedDate), parseFecha(selectedDateHasta));
     itemList.clear();
 
     items.forEach((noDoItem) {
@@ -410,5 +318,9 @@ class _HomeState extends State<Home> {
     setState(() {
       itemList.removeAt(index);
     });
+  }
+
+  void volver(context) {
+    Navigator.pop(context);
   }
 }

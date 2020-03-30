@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:objetive/models/nodo_item.dart';
+import 'package:Objective/models/nodo_item.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -67,6 +67,12 @@ class DatabaseHelper {
     return result.toList();
   }
 
+  Future<List> getItemsRangoFecha(String fechaDesde, String fechaHasta) async {
+    var dbClient = await getDb;
+    var result = await dbClient.rawQuery("SELECT * FROM ${tableName} WHERE $columnFechaRealizar >= '%$fechaDesde%' AND  $columnFechaRealizar <= '%$fechaHasta%'");
+    return result.toList();
+  }
+
   Future<int> getConteoFecha(String fecha) async {
     var dbClient = await getDb;
 
@@ -75,7 +81,6 @@ class DatabaseHelper {
     );
     return cont;
   }
-
 
   Future<int> getCount() async {
     var dbClient = await getDb;

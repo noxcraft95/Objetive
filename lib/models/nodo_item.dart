@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:objetive/utils/database_utils.dart';
+import 'package:Objective/utils/database_utils.dart';
 
 
 class ItemObjetivo extends StatelessWidget {
