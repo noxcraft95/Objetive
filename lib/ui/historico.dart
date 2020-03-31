@@ -187,10 +187,7 @@ class _HistoricoState extends State<Historico> {
                             padding: EdgeInsets.only(right: 15, left: 15),
                             child: new Container(
                               decoration: BoxDecoration(
-                                color: itemObjetivo.realizado.toLowerCase() ==
-                                        ("sin realizar")
-                                    ? Colors.red[500]
-                                    : Colors.green[500],
+                                color: colorFondo(itemObjetivo.realizado.toLowerCase()),
                                 border: Border.all(
                                     color: Colors.white,
                                     width: 0,
@@ -315,5 +312,21 @@ class _HistoricoState extends State<Historico> {
 
   void volver(context) {
     Navigator.pop(context);
+  }
+
+  Color colorFondo(String realizacion) {
+    Color color;
+    switch (realizacion) {
+      case "realizado":
+        color = Colors.green[500];
+        break;
+      case "sin realizar":
+        color = Colors.red[500];
+        break;
+      case "":
+        color = Colors.white;
+        break;
+    }
+    return color;
   }
 }
