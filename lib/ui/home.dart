@@ -169,10 +169,8 @@ class _HomeState extends State<Home> {
                             padding: EdgeInsets.only(right: 15, left: 15),
                             child: new Container(
                               decoration: BoxDecoration(
-                                color: itemObjetivo.realizado.toLowerCase() ==
-                                        ("sin realizar")
-                                    ? Colors.red[500]
-                                    : Colors.green[500],
+                                color: colorFondo(itemObjetivo.realizado.toLowerCase()),
+
                                 border: Border.all(
                                     color: Colors.white,
                                     width: 0,
@@ -396,6 +394,22 @@ class _HomeState extends State<Home> {
     setState(() {});
   }
 
+  Color colorFondo(String realizacion) {
+    Color color;
+    switch (realizacion) {
+      case "realizado":
+        color = Colors.green[500];
+        break;
+      case "sin realizar":
+        color = Colors.red[500];
+        break;
+      case "":
+        color = Colors.white;
+        break;
+    }
+    return color;
+  }
+
   void _onItemTapped(int index) {
     Navigator.pushNamed(context, '/verObjetivo', arguments: itemList[index])
         .then((value) {
@@ -404,6 +418,8 @@ class _HomeState extends State<Home> {
       });
     });
   }
+
+
 
   void deleteItem(int id, int index) async {
     int rowsDeleted = await db.deleteItem(id);
