@@ -375,7 +375,7 @@ class _HomeState extends State<Home> {
     itemControllerObjetivo.clear();
     itemControllerDescripcion.clear();
     itemControllerFecha.clear();
-    String realizado = "Sin realizar";
+    String realizado = "";
     ItemObjetivo item = new ItemObjetivo(textObjetivo, textDescripcion,
         parseFecha(DateTime.now()), textFecha, realizado);
     int itemSavedId = await db.saveItem(item);
@@ -411,4 +411,5 @@ class _HomeState extends State<Home> {
       itemList.removeAt(index);
     });
   }
+
 }

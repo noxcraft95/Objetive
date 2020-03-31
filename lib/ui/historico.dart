@@ -18,7 +18,7 @@ class _HistoricoState extends State<Historico> {
 
   final TextEditingController itemControllerFecha = new TextEditingController();
   var db = new DatabaseHelper();
-  final List<ItemObjetivo> itemList = <ItemObjetivo>[];
+  List<ItemObjetivo> itemList = <ItemObjetivo>[];
 
   //DatePicker
   final FocusNode _focusNodeFechaDesde = FocusNode();
@@ -61,7 +61,7 @@ class _HistoricoState extends State<Historico> {
       if (picked != null)
         setState(() {
           //Cargamos la fecha actual en la de crear objetivo
-          itemControllerFecha.text = parseFecha(picked);
+          itemControllerFechaHasta.text = parseFecha(picked);
           selectedDateHasta = picked;
           _readItems();
         });
@@ -254,9 +254,7 @@ class _HistoricoState extends State<Historico> {
   }
 
   void volverPrincipal(_) {
-    while (Navigator.canPop(context)) {
-      Navigator.pop(context);
-    }
+    Navigator.pop(context);
   }
 
   void _showDialogBorrar(_, ItemObjetivo item, index) {
@@ -293,14 +291,9 @@ class _HistoricoState extends State<Historico> {
   }
 
   void _readItems() async {
-    List items = await db.getItemsRangoFecha(
+    itemList = await db.getItemsRangoFecha(
         parseFecha(selectedDate), parseFecha(selectedDateHasta));
-    itemList.clear();
 
-    items.forEach((noDoItem) {
-      ItemObjetivo item = ItemObjetivo.fromMap(noDoItem);
-      itemList.add(item);
-    });
     setState(() {});
   }
 
