@@ -34,7 +34,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
-  List<String> opcionesRealizado = <String>['Sin realizar', 'Realizado'];
+  List<String> opcionesRealizado = <String>['','Sin realizar', 'Realizado'];
   Icon icono = Icon(Icons.work, color: Colors.orange);
 
   final FocusNode _fnFechaRealizar = FocusNode();
