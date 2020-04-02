@@ -1,10 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:objetive/models/nodo_item.dart';
-import 'package:objetive/ui/home.dart';
-import 'package:objetive/utils/database_utils.dart';
-import 'package:objetive/utils/date_formatter.dart';
+import 'package:Objective/models/nodo_item.dart';
+import 'package:Objective/ui/home.dart';
+import 'package:Objective/utils/database_utils.dart';
+import 'package:Objective/utils/date_formatter.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 
@@ -34,7 +34,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FormState> _formKey = new GlobalKey<FormState>();
 
-  List<String> opcionesRealizado = <String>['Sin realizar', 'Realizado'];
+  List<String> opcionesRealizado = <String>['','Sin realizar', 'Realizado'];
   Icon icono = Icon(Icons.work, color: Colors.orange);
 
   final FocusNode _fnFechaRealizar = FocusNode();

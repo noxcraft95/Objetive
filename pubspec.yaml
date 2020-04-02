@@ -1,4 +1,4 @@
-name: objetive
+name: Objective
 description: Aplicación de creacion de objetivos
 
 # The following defines the version and build number for your application.
@@ -11,7 +11,7 @@ description: Aplicación de creacion de objetivos
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.4+4
+version: 1.0.6+6
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

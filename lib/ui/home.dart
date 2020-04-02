@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:objetive/models/nodo_item.dart';
-import 'package:objetive/utils/database_utils.dart';
-import 'package:objetive/utils/date_formatter.dart';
-import 'package:objetive/ver_objetivo.dart';
+import 'package:Objective/models/nodo_item.dart';
+import 'package:Objective/utils/database_utils.dart';
+import 'package:Objective/utils/date_formatter.dart';
+import 'package:Objective/ver_objetivo.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -34,16 +34,12 @@ class _HomeState extends State<Home> {
   DateTime selectedDateBuscar = DateTime.now();
 
   Future<Null> _selectorFechaCrear(BuildContext context) async {
-    if(_focusNodeFecha.hasFocus) {
+    if (_focusNodeFecha.hasFocus) {
       final DateTime picked = await showDatePicker(
           context: context,
           initialDate: selectedDate,
-          firstDate: DateTime(DateTime
-              .now()
-              .year),
-          lastDate: DateTime(DateTime
-              .now()
-              .year + 5));
+          firstDate: DateTime(DateTime.now().year),
+          lastDate: DateTime(DateTime.now().year + 5));
       _focusNodeFecha.unfocus();
       setState(() {
         if (picked != null) {
@@ -87,7 +83,7 @@ class _HomeState extends State<Home> {
     }
     if (!_focusNodeFechaBuscar.hasListeners) {
       _focusNodeFechaBuscar.addListener(() {
-          _selectorFechaBuscar(context);
+        _selectorFechaBuscar(context);
       });
     }
   }
@@ -101,6 +97,16 @@ class _HomeState extends State<Home> {
       appBar: new AppBar(
         title: Text("Objetivos"),
         automaticallyImplyLeading: false,
+        actions: <Widget>[
+          // action button
+            IconButton(
+              icon: new Icon(Icons.date_range,color: Colors.green,size: 36,),
+              onPressed: () {
+                Navigator.pushNamed(context, '/historico');
+              },
+              padding: EdgeInsets.only(right: 60),
+            ),
+        ],
         flexibleSpace: Container(
           decoration: new BoxDecoration(
             gradient: new LinearGradient(
@@ -163,10 +169,8 @@ class _HomeState extends State<Home> {
                             padding: EdgeInsets.only(right: 15, left: 15),
                             child: new Container(
                               decoration: BoxDecoration(
-                                color: itemObjetivo.realizado.toLowerCase() ==
-                                        ("sin realizar")
-                                    ? Colors.red[500]
-                                    : Colors.green[500],
+                                color: colorFondo(itemObjetivo.realizado.toLowerCase()),
+
                                 border: Border.all(
                                     color: Colors.white,
                                     width: 0,
@@ -185,7 +189,8 @@ class _HomeState extends State<Home> {
                               padding: new EdgeInsets.only(right: 16.0),
                               child: new ListTile(
                                 onTap: () => _onItemTapped(position),
-                                onLongPress: () => _showDialogBorrar(context,itemList[position],position),
+                                onLongPress: () => _showDialogBorrar(
+                                    context, itemList[position], position),
                                 title: itemList[position],
                               ),
                             ),
@@ -319,15 +324,16 @@ class _HomeState extends State<Home> {
     showDialog(context: _, builder: (_) => alert);
   }
 
-  void _showDialogBorrar(_,ItemObjetivo item, index) {
+  void _showDialogBorrar(_, ItemObjetivo item, index) {
     final _formKey = GlobalKey<FormState>();
     String labelTextFecha = "Añadir Fecha";
     var alert = new AlertDialog(
       content: Container(
-        child: Text("¿Desea eliminar el objetivo?", textAlign: TextAlign.center),
+        child:
+            Text("¿Desea eliminar el objetivo?", textAlign: TextAlign.center),
       ),
       actions: <Widget>[
-        new  FlatButton.icon(
+        new FlatButton.icon(
             icon: Icon(Icons.arrow_back),
             color: Colors.blue,
             textColor: Colors.white,
@@ -347,12 +353,8 @@ class _HomeState extends State<Home> {
     showDialog(context: _, builder: (_) => alert);
   }
 
-
-
   void volverPrincipal(_) {
-    while (Navigator.canPop(context)) {
       Navigator.pop(context);
-    }
   }
 
   void botonVolverCreacion(_) {
@@ -371,7 +373,7 @@ class _HomeState extends State<Home> {
     itemControllerObjetivo.clear();
     itemControllerDescripcion.clear();
     itemControllerFecha.clear();
-    String realizado = "Sin realizar";
+    String realizado = "";
     ItemObjetivo item = new ItemObjetivo(textObjetivo, textDescripcion,
         parseFecha(DateTime.now()), textFecha, realizado);
     int itemSavedId = await db.saveItem(item);
@@ -392,13 +394,32 @@ class _HomeState extends State<Home> {
     setState(() {});
   }
 
+  Color colorFondo(String realizacion) {
+    Color color;
+    switch (realizacion) {
+      case "realizado":
+        color = Colors.green[500];
+        break;
+      case "sin realizar":
+        color = Colors.red[500];
+        break;
+      case "":
+        color = Colors.white;
+        break;
+    }
+    return color;
+  }
+
   void _onItemTapped(int index) {
-    Navigator.pushNamed(context, '/verObjetivo',arguments: itemList[index]).then((value) {
+    Navigator.pushNamed(context, '/verObjetivo', arguments: itemList[index])
+        .then((value) {
       setState(() {
         _readItems();
       });
     });
   }
+
+
 
   void deleteItem(int id, int index) async {
     int rowsDeleted = await db.deleteItem(id);
@@ -406,4 +427,5 @@ class _HomeState extends State<Home> {
       itemList.removeAt(index);
     });
   }
+
 }

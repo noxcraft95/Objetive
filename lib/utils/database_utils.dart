@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:objetive/models/nodo_item.dart';
+import 'package:Objective/models/nodo_item.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path_provider/path_provider.dart';
@@ -67,6 +67,30 @@ class DatabaseHelper {
     return result.toList();
   }
 
+  Future<List> getItemsRangoFecha(String fechaDesde, String fechaHasta) async {
+    var dbClient = await getDb;
+    var result = await dbClient.rawQuery("SELECT * FROM ${tableName}");
+    var fechaDesdeFormat = fechaDesde.split("/");
+    var fechaHastaFormat = fechaHasta.split("/");
+    fechaDesde = "";
+    fechaHasta = "";
+
+    fechaDesde = fechaDesdeFormat[2] + fechaDesdeFormat[1] + fechaDesdeFormat[0];
+    fechaHasta = fechaHastaFormat[2] + fechaHastaFormat[1] + fechaHastaFormat[0];
+
+    List <ItemObjetivo> itemList = new List();
+    result.toList().forEach((noDoItem){
+      ItemObjetivo item = ItemObjetivo.fromMap(noDoItem);
+      var fechaItem = item.fechaRealizar.split("/");
+      var fechaObjetivoFormat = fechaItem[2] + fechaItem[1] + fechaItem[0];
+      if(int.parse(fechaObjetivoFormat) >= int.parse(fechaDesde) && int.parse(fechaObjetivoFormat) <= int.parse(fechaHasta)){
+        itemList.add(item);
+      }
+    });
+    ;
+    return itemList;
+  }
+
   Future<int> getConteoFecha(String fecha) async {
     var dbClient = await getDb;
 
@@ -75,7 +99,6 @@ class DatabaseHelper {
     );
     return cont;
   }
-
 
   Future<int> getCount() async {
     var dbClient = await getDb;

@@ -1,6 +1,7 @@
+import 'package:Objective/ui/historico.dart';
 import 'package:flutter/material.dart';
-import 'package:objetive/ui/home.dart';
-import 'package:objetive/ver_objetivo.dart';
+import 'package:Objective/ui/home.dart';
+import 'package:Objective/ver_objetivo.dart';
 
 
 void main() async {
@@ -14,6 +15,7 @@ void main() async {
     routes: <String, WidgetBuilder>{
       '/': (context) => Home(),
       '/verObjetivo': (context) => VerObjetivo(),
+      '/historico': (context) => Historico(),
     },
   ));
 }
