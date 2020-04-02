@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:Objective/models/nodo_item.dart';
 import 'package:Objective/utils/database_utils.dart';
 import 'package:Objective/utils/date_formatter.dart';
-import 'package:Objective/ver_objetivo.dart';
 
 class Historico extends StatefulWidget {
   @override
@@ -176,7 +174,8 @@ class _HistoricoState extends State<Historico> {
           ),
           new Expanded(
             child: itemList.isNotEmpty
-                ? new ListView.builder(
+                ? new ListView.separated(
+                    separatorBuilder: (context, index) => calculaColorDivider(itemList, index),
                     padding: new EdgeInsets.only(bottom: 72.0),
                     itemCount: itemList.length,
                     itemBuilder: (BuildContext context, int position) {
@@ -212,9 +211,6 @@ class _HistoricoState extends State<Historico> {
                               ),
                             ),
                           ),
-                          new Divider(
-                            color: Colors.transparent,
-                          )
                         ],
                       );
                     },
@@ -252,6 +248,20 @@ class _HistoricoState extends State<Historico> {
 
   void volverPrincipal(_) {
     Navigator.pop(context);
+  }
+
+  Divider calculaColorDivider(List<ItemObjetivo> lista, index){
+
+    Color color =  Colors.transparent;
+    if(index + 1 < lista.length) {
+      if (lista[index].fechaRealizar != lista[index + 1].fechaRealizar) {
+        color = Colors.brown;
+      } else {
+        color = Colors.transparent;
+      }
+    }
+    Divider divider = new Divider(color: color);
+    return divider;
   }
 
   void _showDialogBorrar(_, ItemObjetivo item, index) {
