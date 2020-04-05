@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:Objective/models/nodo_item.dart';
-import 'package:Objective/utils/database_utils.dart';
-import 'package:Objective/utils/date_formatter.dart';
-import 'package:Objective/ver_objetivo.dart';
+import 'package:ThreeObjective/models/nodo_item.dart';
+import 'package:ThreeObjective/utils/database_utils.dart';
+import 'package:ThreeObjective/utils/date_formatter.dart';
+import 'package:ThreeObjective/ver_objetivo.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -52,22 +52,27 @@ class _HomeState extends State<Home> {
 
   //DatePickerBuscar
   Future<Null> _selectorFechaBuscar(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDateBuscar,
-        firstDate: DateTime(DateTime.now().year),
-        lastDate: DateTime(DateTime.now().year + 5));
-    volverPrincipal(context);
-    _focusNodeFechaBuscar.unfocus();
-    if (picked != null)
-      setState(() {
-        //Cargamos la fecha actual en la de crear objetivo
-        itemControllerFecha.text = parseFecha(picked);
-        selectedDateBuscar = picked;
-        //Actualizamos la fecha de busqueda a la elegida
-        itemControllerFechaBusqueda.text = parseFecha(picked);
-        _readItems();
-      });
+    if (_focusNodeFechaBuscar.hasFocus) {
+      final DateTime picked = await showDatePicker(
+          context: context,
+          initialDate: selectedDateBuscar,
+          firstDate: DateTime(DateTime
+              .now()
+              .year),
+          lastDate: DateTime(DateTime
+              .now()
+              .year + 5));
+      _focusNodeFechaBuscar.unfocus();
+      if (picked != null)
+        setState(() {
+          //Cargamos la fecha actual en la de crear objetivo
+          itemControllerFecha.text = parseFecha(picked);
+          selectedDateBuscar = picked;
+          //Actualizamos la fecha de busqueda a la elegida
+          itemControllerFechaBusqueda.text = parseFecha(picked);
+          _readItems();
+        });
+    }
   }
 
   @override

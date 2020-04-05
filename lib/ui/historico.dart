@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:Objective/models/nodo_item.dart';
-import 'package:Objective/utils/database_utils.dart';
-import 'package:Objective/utils/date_formatter.dart';
+import 'package:ThreeObjective/models/nodo_item.dart';
+import 'package:ThreeObjective/utils/database_utils.dart';
+import 'package:ThreeObjective/utils/date_formatter.dart';
 
 class Historico extends StatefulWidget {
   @override

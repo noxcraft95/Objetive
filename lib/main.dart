@@ -1,7 +1,7 @@
-import 'package:Objective/ui/historico.dart';
+import 'package:ThreeObjective/ui/historico.dart';
 import 'package:flutter/material.dart';
-import 'package:Objective/ui/home.dart';
-import 'package:Objective/ver_objetivo.dart';
+import 'package:ThreeObjective/ui/home.dart';
+import 'package:ThreeObjective/ver_objetivo.dart';
 
 
 void main() async {
