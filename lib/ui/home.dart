@@ -100,6 +100,8 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: new AppBar(
+
+
         title: Text("Objetivos"),
         automaticallyImplyLeading: false,
         actions: <Widget>[
@@ -109,9 +111,18 @@ class _HomeState extends State<Home> {
               onPressed: () {
                 Navigator.pushNamed(context, '/historico');
               },
-              padding: EdgeInsets.only(right: 60),
+              padding: EdgeInsets.only(right: 20),
             ),
+          IconButton(
+            icon: new Icon(Icons.notifications,color: Colors.orange,size: 36,),
+            onPressed: () {
+              Navigator.pushNamed(context, '/notificacion');
+            },
+            padding: EdgeInsets.only(right: 60),
+          ),
         ],
+
+
         flexibleSpace: Container(
           decoration: new BoxDecoration(
             gradient: new LinearGradient(
