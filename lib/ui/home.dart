@@ -1,9 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ThreeObjective/models/nodo_item.dart';
 import 'package:ThreeObjective/utils/database_utils.dart';
 import 'package:ThreeObjective/utils/date_formatter.dart';
 import 'package:ThreeObjective/ver_objetivo.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -25,6 +29,8 @@ class _HomeState extends State<Home> {
   var db = new DatabaseHelper();
   final List<ItemObjetivo> itemList = <ItemObjetivo>[];
 
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
   //DatePicker
   final FocusNode _focusNodeFecha = FocusNode();
   final FocusNode _focusNodeFechaBuscar = FocusNode();
@@ -42,7 +48,9 @@ class _HomeState extends State<Home> {
           lastDate: DateTime(DateTime.now().year + 5));
       _focusNodeFecha.unfocus();
       setState(() {
+        print("s.o.s");
         if (picked != null) {
+          print("s.o.s2");
           selectedDate = picked;
           itemControllerFecha.text = parseFecha(selectedDate);
         }
@@ -50,6 +58,25 @@ class _HomeState extends State<Home> {
     }
   }
 
+  Future scheuleAtParticularTime(DateTime timee) async {
+    var time = Time(timee.hour, timee.minute, timee.second);
+    print(time.toString());
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'repeatDailyAtTime channel id',
+        'repeatDailyAtTime channel name',
+        'repeatDailyAtTime description');
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    flutterLocalNotificationsPlugin.showDailyAtTime(0, 'ThreeObjective',
+        'Recuerda dedicarle un tiempo a tus objetivos.', time, platformChannelSpecifics);
+  }
+
+  Future<String>_obtenerEstado() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String contieneDatosPref = prefs.getBool('estado').toString() ?? null;
+    return contieneDatosPref;
+  }
   //DatePickerBuscar
   Future<Null> _selectorFechaBuscar(BuildContext context) async {
     if (_focusNodeFechaBuscar.hasFocus) {
@@ -91,7 +118,29 @@ class _HomeState extends State<Home> {
         _selectorFechaBuscar(context);
       });
     }
-  }
+
+    //Comprobamos si es la primera vez que se hace las notificaciones para activarlas por defecto
+    _obtenerEstado().then((value){
+        if((value == null || value == "null")){
+          print("BLABLA: $value");
+          var initializationSettingsAndroid =
+          new AndroidInitializationSettings('@mipmap/ic_launcher');
+          var initializationSettingsIOS = new IOSInitializationSettings();
+          var initializationSettings = new InitializationSettings(
+              initializationSettingsAndroid, initializationSettingsIOS);
+
+          flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+          flutterLocalNotificationsPlugin.initialize(initializationSettings);
+          //Se establece las 17:0:0 por defecto.
+          DateTime date = DateTime(2020, 6, 4, 17, 0, 0);
+          print("activamos notificaciones por primera instancia: $date");
+          scheuleAtParticularTime(
+              DateTime.fromMillisecondsSinceEpoch(
+                  date.millisecondsSinceEpoch));
+
+        }
+      });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -372,6 +421,7 @@ class _HomeState extends State<Home> {
   void volverPrincipal(_) {
       Navigator.pop(context);
   }
+
 
   void botonVolverCreacion(_) {
     itemControllerObjetivo.clear();
