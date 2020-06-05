@@ -76,3 +76,7 @@ test.keystore
 android/key.properties
 
 .flutter-plugins-dependencies
+
+ios/Flutter/flutter_export_environment.sh
+
+android/app/src/main/res/mipmap-mdpi/Thumbs.db
