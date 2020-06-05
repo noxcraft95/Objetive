@@ -67,8 +67,28 @@ class _NotificacionState extends State<Notificacion> {
   Widget build(BuildContext context) {
     return new MaterialApp(
       home: new Scaffold(
+        backgroundColor: Colors.grey.shade100,
         appBar: new AppBar(
-          title: new Text('Recordatorio'),
+          title: Text("Recordatorio"),
+          automaticallyImplyLeading: false,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.white),
+            onPressed: () => volverPrincipal(context),
+          ),
+          flexibleSpace: Container(
+            decoration: new BoxDecoration(
+              gradient: new LinearGradient(
+                  colors: [
+                    Colors.brown[400],
+                    Colors.brown[900],
+                  ],
+                  begin: const FractionalOffset(0.0, 0.7),
+                  end: const FractionalOffset(1.0, 0.0),
+                  stops: [0.0, 1.0],
+                  tileMode: TileMode.clamp),
+            ),
+          ),
+          centerTitle: true,
         ),
         body: new Center(
           child: new Column(
@@ -144,6 +164,9 @@ class _NotificacionState extends State<Notificacion> {
         ),
       ),
     );
+  }
+  void volverPrincipal(_) {
+    Navigator.pop(context);
   }
 
   Future scheuleAtParticularTime(DateTime timee) async {
