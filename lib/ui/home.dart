@@ -5,6 +5,7 @@ import 'package:ThreeObjective/models/nodo_item.dart';
 import 'package:ThreeObjective/utils/database_utils.dart';
 import 'package:ThreeObjective/utils/date_formatter.dart';
 import 'package:ThreeObjective/ver_objetivo.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,25 +40,6 @@ class _HomeState extends State<Home> {
   DateTime selectedDate = DateTime.now();
   DateTime selectedDateBuscar = DateTime.now();
 
-  Future<Null> _selectorFechaCrear(BuildContext context) async {
-    if (_focusNodeFecha.hasFocus) {
-      final DateTime picked = await showDatePicker(
-          context: context,
-          initialDate: selectedDate,
-          firstDate: DateTime(DateTime.now().year),
-          lastDate: DateTime(DateTime.now().year + 5));
-      _focusNodeFecha.unfocus();
-      setState(() {
-        print("s.o.s");
-        if (picked != null) {
-          print("s.o.s2");
-          selectedDate = picked;
-          itemControllerFecha.text = parseFecha(selectedDate);
-        }
-      });
-    }
-  }
-
   Future scheuleAtParticularTime(DateTime timee) async {
     var time = Time(timee.hour, timee.minute, timee.second);
     print(time.toString());
@@ -77,30 +59,6 @@ class _HomeState extends State<Home> {
     String contieneDatosPref = prefs.getBool('estado').toString() ?? null;
     return contieneDatosPref;
   }
-  //DatePickerBuscar
-  Future<Null> _selectorFechaBuscar(BuildContext context) async {
-    if (_focusNodeFechaBuscar.hasFocus) {
-      final DateTime picked = await showDatePicker(
-          context: context,
-          initialDate: selectedDateBuscar,
-          firstDate: DateTime(DateTime
-              .now()
-              .year),
-          lastDate: DateTime(DateTime
-              .now()
-              .year + 5));
-      _focusNodeFechaBuscar.unfocus();
-      if (picked != null)
-        setState(() {
-          //Cargamos la fecha actual en la de crear objetivo
-          itemControllerFecha.text = parseFecha(picked);
-          selectedDateBuscar = picked;
-          //Actualizamos la fecha de busqueda a la elegida
-          itemControllerFechaBusqueda.text = parseFecha(picked);
-          _readItems();
-        });
-    }
-  }
 
   @override
   void initState() {
@@ -110,19 +68,20 @@ class _HomeState extends State<Home> {
 
     if (!_focusNodeFecha.hasListeners) {
       _focusNodeFecha.addListener(() {
-        _selectorFechaCrear(context);
+        //_selectorFechaCrear(context);
+        abrirDatePickerCrear();
       });
     }
     if (!_focusNodeFechaBuscar.hasListeners) {
       _focusNodeFechaBuscar.addListener(() {
-        _selectorFechaBuscar(context);
+        //_selectorFechaBuscar(context);
+        abrirDatePickerBuscar();
       });
     }
 
     //Comprobamos si es la primera vez que se hace las notificaciones para activarlas por defecto
     _obtenerEstado().then((value){
         if((value == null || value == "null")){
-          print("BLABLA: $value");
           var initializationSettingsAndroid =
           new AndroidInitializationSettings('@mipmap/ic_launcher');
           var initializationSettingsIOS = new IOSInitializationSettings();
@@ -141,6 +100,46 @@ class _HomeState extends State<Home> {
         }
       });
 }
+
+
+  void abrirDatePickerBuscar(){
+    if(_focusNodeFechaBuscar.hasFocus){
+      _focusNodeFechaBuscar.unfocus();
+    DatePicker.showDatePicker(context, showTitleActions: true,
+        onChanged: (date) {
+          print('change $date');
+        }, onConfirm: (date) {
+          print('confirm $date');
+          setState(() {
+            //Cargamos la fecha actual en la de crear objetivo
+            itemControllerFecha.text = parseFecha(date);
+            selectedDateBuscar = date;
+            //Actualizamos la fecha de busqueda a la elegida
+            itemControllerFechaBusqueda.text = parseFecha(date);
+            _readItems();
+          });
+        }, currentTime: DateTime.now(), locale: LocaleType.es);
+    }
+  }
+
+  void abrirDatePickerCrear(){
+    if(_focusNodeFecha.hasFocus) {
+      _focusNodeFecha.unfocus();
+      DatePicker.showDatePicker(context, showTitleActions: true,
+          onChanged: (date) {
+            print('change $date');
+          },
+          onConfirm: (date) {
+            print('confirm $date');
+            setState(() {
+                selectedDate = date;
+                itemControllerFecha.text = parseFecha(selectedDate);
+             });;
+          },
+          currentTime: DateTime.now(),
+          locale: LocaleType.es);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

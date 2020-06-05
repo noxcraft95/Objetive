@@ -5,6 +5,7 @@ import 'package:ThreeObjective/models/nodo_item.dart';
 import 'package:ThreeObjective/ui/home.dart';
 import 'package:ThreeObjective/utils/database_utils.dart';
 import 'package:ThreeObjective/utils/date_formatter.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 
@@ -47,25 +48,28 @@ class _MyHomePageState extends State<MyHomePage> {
   String realizado;
   var db = new DatabaseHelper();
 
-  Future<Null> _selectorFechaBuscar(BuildContext context) async {
-    if (_fnFechaRealizar.hasFocus) {
-      final DateTime picked = await showDatePicker(
-          context: context,
-          initialDate: selectedDate,
-          firstDate: DateTime(DateTime.now().year),
-          lastDate: DateTime(DateTime.now().year + 5));
+  void abrirDatePickerHasta(){
+    if(_fnFechaRealizar.hasFocus) {
       _fnFechaRealizar.unfocus();
-      if (picked != null)
-        await db.getConteoFecha(parseFecha(picked)).then((fecha) {
-          if (fecha >= 3) {
-            showToast("La fecha alcanzó el límite de objetivos");
-          } else {
-            setState(() {
-              textFechaRealizar.text = parseFecha(picked);
-              selectedDate = picked;
+      DatePicker.showDatePicker(context, showTitleActions: true,
+          onChanged: (date) {
+            print('change $date');
+          },
+          onConfirm: (date) async {
+            print('confirm $date');
+            await db.getConteoFecha(parseFecha(date)).then((fecha) {
+              if (fecha >= 3) {
+                showToast("La fecha alcanzó el límite de objetivos");
+              } else {
+                setState(() {
+                  textFechaRealizar.text = parseFecha(date);
+                  selectedDate = date;
+                });
+              }
             });
-          }
-        });
+          },
+          currentTime: DateTime.now(),
+          locale: LocaleType.es);
     }
   }
 
@@ -91,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     if (!_fnFechaRealizar.hasListeners) {
       _fnFechaRealizar.addListener(() {
-        _selectorFechaBuscar(context);
+        abrirDatePickerHasta();
       });
     }
   }
