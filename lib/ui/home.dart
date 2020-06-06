@@ -96,7 +96,6 @@ class _HomeState extends State<Home> {
           scheuleAtParticularTime(
               DateTime.fromMillisecondsSinceEpoch(
                   date.millisecondsSinceEpoch));
-
         }
       });
 }
@@ -141,6 +140,23 @@ class _HomeState extends State<Home> {
     }
   }
 
+   void buscarDiaAtras(){
+    print("pacoatras");
+    selectedDateBuscar = selectedDateBuscar.subtract(Duration(days: 1));
+    itemControllerFecha.text = parseFecha(selectedDateBuscar);
+    //Actualizamos la fecha de busqueda a la elegida
+    itemControllerFechaBusqueda.text = parseFecha(selectedDateBuscar);
+    _readItems();
+  }
+  
+   void buscarDiaAdelante(){
+    selectedDateBuscar = selectedDateBuscar.add(Duration(days: 1));
+    itemControllerFecha.text = parseFecha(selectedDateBuscar);
+    //Actualizamos la fecha de busqueda a la elegida
+    itemControllerFechaBusqueda.text = parseFecha(selectedDateBuscar);
+    _readItems();
+  }
+  
   @override
   Widget build(BuildContext context) {
     final ItemObjetivo itemObjetivo = ModalRoute.of(context).settings.arguments;
@@ -193,30 +209,48 @@ class _HomeState extends State<Home> {
       ),
       body: new Column(
         children: <Widget>[
-          new Column(children: <Widget>[
-            new Padding(
-                padding: EdgeInsets.all(20),
-                child: new TextFormField(
-                  controller: itemControllerFechaBusqueda,
-                  autofocus: false,
-                  focusNode: _focusNodeFechaBuscar,
-                  textAlign: TextAlign.center,
-                  decoration: new InputDecoration(
-                    fillColor: Colors.green[100],
-                    filled: true,
-                    contentPadding: EdgeInsets.all(10),
-                    icon: new Icon(
-                      Icons.search,
-                      color: Colors.green,
-                      size: 30,
+          new Padding(
+              padding: EdgeInsets.only(top: 15, bottom: 5),
+              child: new Container(
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    new IconButton(
+                      onPressed: () {
+                        buscarDiaAtras();
+                      },
+                      icon: Icon(Icons.arrow_back_ios, size: 28, color: Colors.grey[600]),
+                      padding: EdgeInsets.only(left: 15,right:25),
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius:
+                    new Flexible(child:  new TextFormField(
+                      controller: itemControllerFechaBusqueda,
+                      autofocus: false,
+                      focusNode: _focusNodeFechaBuscar,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 20,
+                      ),
+                      decoration: new InputDecoration(
+                        fillColor: Colors.green[100],
+                        filled: true,
+                        contentPadding: EdgeInsets.all(10),
+                        border: OutlineInputBorder(
+                          borderRadius:
                           const BorderRadius.all(Radius.circular(10.0)),
+                        ),
+                      ),
+                    ),),
+                    new IconButton(
+                      onPressed: (){
+                          buscarDiaAdelante();
+                      },
+                      icon: Icon(Icons.arrow_forward_ios, size: 28, color: Colors.grey[600]),
+                      padding: EdgeInsets.only(left: 25,right:15),
                     ),
-                  ),
-                )),
-          ]),
+                  ],
+                ),
+              ),
+          ),
           new SizedBox(
             height: 10,
           ),
