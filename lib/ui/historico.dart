@@ -120,16 +120,19 @@ class _HistoricoState extends State<Historico> {
           Row(
             children: <Widget>[
               Flexible(
-                child: Padding( padding: EdgeInsets.all(20),
+                child: Padding( padding: EdgeInsets.all(10),
                   child:new TextFormField(
                   controller: itemControllerFecha,
                   autofocus: false,
+                  style: TextStyle(
+                    fontSize: 15,
+                  ),
                   focusNode: _focusNodeFechaDesde,
                   textAlign: TextAlign.center,
                   decoration: new InputDecoration(
                     fillColor: Colors.green[100],
                     filled: true,
-                    contentPadding: EdgeInsets.all(10),
+                    contentPadding: EdgeInsets.all(5),
                     icon: new Icon(
                       Icons.calendar_today,
                       color: Colors.green,
@@ -145,11 +148,14 @@ class _HistoricoState extends State<Historico> {
               ),
               Flexible(
                 child: Padding( 
-                  padding: EdgeInsets.all(20),
+                  padding: EdgeInsets.all(10),
                   child: new TextFormField(
                   controller: itemControllerFechaHasta,
                   autofocus: false,
                   focusNode: _focusNodeFechaHasta,
+                    style: TextStyle(
+                      fontSize: 15,
+                    ),
                   textAlign: TextAlign.center,
                   decoration: new InputDecoration(
                     icon: new Icon(
@@ -159,7 +165,7 @@ class _HistoricoState extends State<Historico> {
                     ),
                     fillColor: Colors.green[100],
                     filled: true,
-                    contentPadding: EdgeInsets.all(10),
+                    contentPadding: EdgeInsets.all(5),
                     border: OutlineInputBorder(
                       borderRadius:
                           const BorderRadius.all(Radius.circular(10.0)),
