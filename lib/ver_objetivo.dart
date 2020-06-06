@@ -210,6 +210,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: new TextFormField(
                           initialValue: widget.itemObjetivo.fechaCreacion,
                           enabled: false,
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
                           decoration: const InputDecoration(
                             icon: const Icon(Icons.calendar_today,
                                 color: Colors.green),
@@ -229,6 +232,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           controller: textFechaRealizar,
                           focusNode: _fnFechaRealizar,
                           autofocus: false,
+                          style: TextStyle(
+                              fontSize: 14,
+                          ),
                           decoration: const InputDecoration(
                             icon: const Icon(Icons.calendar_today,
                                 color: Colors.green),
