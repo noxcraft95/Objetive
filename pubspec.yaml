@@ -14,17 +14,20 @@ description: Aplicación de creacion de objetivos
 version: 1.0.9+9
 
 environment:
-  sdk: ">=2.1.0 <3.0.0"
+  sdk: ">=2.4.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^0.1.2
+  flutter_datetime_picker: ^1.2.0
   sqflite: any
   path_provider: "^0.4.1"
   intl: "^0.15.6"
   validators: ^2.0.0
   fluttertoast: ^3.1.0
+  flutter_local_notifications: ^0.8.4+3
+  shared_preferences: ^0.5.7+3
 
 
 dev_dependencies:

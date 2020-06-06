@@ -1,9 +1,14 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:ThreeObjective/models/nodo_item.dart';
 import 'package:ThreeObjective/utils/database_utils.dart';
 import 'package:ThreeObjective/utils/date_formatter.dart';
 import 'package:ThreeObjective/ver_objetivo.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -25,6 +30,8 @@ class _HomeState extends State<Home> {
   var db = new DatabaseHelper();
   final List<ItemObjetivo> itemList = <ItemObjetivo>[];
 
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+
   //DatePicker
   final FocusNode _focusNodeFecha = FocusNode();
   final FocusNode _focusNodeFechaBuscar = FocusNode();
@@ -33,46 +40,24 @@ class _HomeState extends State<Home> {
   DateTime selectedDate = DateTime.now();
   DateTime selectedDateBuscar = DateTime.now();
 
-  Future<Null> _selectorFechaCrear(BuildContext context) async {
-    if (_focusNodeFecha.hasFocus) {
-      final DateTime picked = await showDatePicker(
-          context: context,
-          initialDate: selectedDate,
-          firstDate: DateTime(DateTime.now().year),
-          lastDate: DateTime(DateTime.now().year + 5));
-      _focusNodeFecha.unfocus();
-      setState(() {
-        if (picked != null) {
-          selectedDate = picked;
-          itemControllerFecha.text = parseFecha(selectedDate);
-        }
-      });
-    }
+  Future scheuleAtParticularTime(DateTime timee) async {
+    var time = Time(timee.hour, timee.minute, timee.second);
+    print(time.toString());
+    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
+        'repeatDailyAtTime channel id',
+        'repeatDailyAtTime channel name',
+        'repeatDailyAtTime description');
+    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
+    var platformChannelSpecifics = new NotificationDetails(
+        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
+    flutterLocalNotificationsPlugin.showDailyAtTime(0, 'ThreeObjective',
+        'Recuerda dedicarle un tiempo a tus objetivos.', time, platformChannelSpecifics);
   }
 
-  //DatePickerBuscar
-  Future<Null> _selectorFechaBuscar(BuildContext context) async {
-    if (_focusNodeFechaBuscar.hasFocus) {
-      final DateTime picked = await showDatePicker(
-          context: context,
-          initialDate: selectedDateBuscar,
-          firstDate: DateTime(DateTime
-              .now()
-              .year),
-          lastDate: DateTime(DateTime
-              .now()
-              .year + 5));
-      _focusNodeFechaBuscar.unfocus();
-      if (picked != null)
-        setState(() {
-          //Cargamos la fecha actual en la de crear objetivo
-          itemControllerFecha.text = parseFecha(picked);
-          selectedDateBuscar = picked;
-          //Actualizamos la fecha de busqueda a la elegida
-          itemControllerFechaBusqueda.text = parseFecha(picked);
-          _readItems();
-        });
-    }
+  Future<String>_obtenerEstado() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String contieneDatosPref = prefs.getBool('estado').toString() ?? null;
+    return contieneDatosPref;
   }
 
   @override
@@ -83,16 +68,95 @@ class _HomeState extends State<Home> {
 
     if (!_focusNodeFecha.hasListeners) {
       _focusNodeFecha.addListener(() {
-        _selectorFechaCrear(context);
+        //_selectorFechaCrear(context);
+        abrirDatePickerCrear();
       });
     }
     if (!_focusNodeFechaBuscar.hasListeners) {
       _focusNodeFechaBuscar.addListener(() {
-        _selectorFechaBuscar(context);
+        //_selectorFechaBuscar(context);
+        abrirDatePickerBuscar();
       });
+    }
+
+    //Comprobamos si es la primera vez que se hace las notificaciones para activarlas por defecto
+    _obtenerEstado().then((value){
+        if((value == null || value == "null")){
+          var initializationSettingsAndroid =
+          new AndroidInitializationSettings('@mipmap/ic_launcher');
+          var initializationSettingsIOS = new IOSInitializationSettings();
+          var initializationSettings = new InitializationSettings(
+              initializationSettingsAndroid, initializationSettingsIOS);
+
+          flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
+          flutterLocalNotificationsPlugin.initialize(initializationSettings);
+          //Se establece las 17:0:0 por defecto.
+          DateTime date = DateTime(2020, 6, 4, 17, 0, 0);
+          print("activamos notificaciones por primera instancia: $date");
+          scheuleAtParticularTime(
+              DateTime.fromMillisecondsSinceEpoch(
+                  date.millisecondsSinceEpoch));
+        }
+      });
+}
+
+
+  void abrirDatePickerBuscar(){
+    if(_focusNodeFechaBuscar.hasFocus){
+      _focusNodeFechaBuscar.unfocus();
+    DatePicker.showDatePicker(context, showTitleActions: true,
+        onChanged: (date) {
+          print('change $date');
+        }, onConfirm: (date) {
+          print('confirm $date');
+          setState(() {
+            //Cargamos la fecha actual en la de crear objetivo
+            itemControllerFecha.text = parseFecha(date);
+            selectedDateBuscar = date;
+            //Actualizamos la fecha de busqueda a la elegida
+            itemControllerFechaBusqueda.text = parseFecha(date);
+            _readItems();
+          });
+        }, currentTime: DateTime.now(), locale: LocaleType.es);
     }
   }
 
+  void abrirDatePickerCrear(){
+    if(_focusNodeFecha.hasFocus) {
+      _focusNodeFecha.unfocus();
+      DatePicker.showDatePicker(context, showTitleActions: true,
+          onChanged: (date) {
+            print('change $date');
+          },
+          onConfirm: (date) {
+            print('confirm $date');
+            setState(() {
+                selectedDate = date;
+                itemControllerFecha.text = parseFecha(selectedDate);
+             });;
+          },
+          currentTime: DateTime.now(),
+          locale: LocaleType.es);
+    }
+  }
+
+   void buscarDiaAtras(){
+    print("pacoatras");
+    selectedDateBuscar = selectedDateBuscar.subtract(Duration(days: 1));
+    itemControllerFecha.text = parseFecha(selectedDateBuscar);
+    //Actualizamos la fecha de busqueda a la elegida
+    itemControllerFechaBusqueda.text = parseFecha(selectedDateBuscar);
+    _readItems();
+  }
+  
+   void buscarDiaAdelante(){
+    selectedDateBuscar = selectedDateBuscar.add(Duration(days: 1));
+    itemControllerFecha.text = parseFecha(selectedDateBuscar);
+    //Actualizamos la fecha de busqueda a la elegida
+    itemControllerFechaBusqueda.text = parseFecha(selectedDateBuscar);
+    _readItems();
+  }
+  
   @override
   Widget build(BuildContext context) {
     final ItemObjetivo itemObjetivo = ModalRoute.of(context).settings.arguments;
@@ -100,6 +164,8 @@ class _HomeState extends State<Home> {
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: new AppBar(
+
+
         title: Text("Objetivos"),
         automaticallyImplyLeading: false,
         actions: <Widget>[
@@ -109,9 +175,18 @@ class _HomeState extends State<Home> {
               onPressed: () {
                 Navigator.pushNamed(context, '/historico');
               },
-              padding: EdgeInsets.only(right: 60),
+              padding: EdgeInsets.only(right: 20),
             ),
+          IconButton(
+            icon: new Icon(Icons.notifications,color: Colors.orange,size: 36,),
+            onPressed: () {
+              Navigator.pushNamed(context, '/notificacion');
+            },
+            padding: EdgeInsets.only(right: 60),
+          ),
         ],
+
+
         flexibleSpace: Container(
           decoration: new BoxDecoration(
             gradient: new LinearGradient(
@@ -134,30 +209,48 @@ class _HomeState extends State<Home> {
       ),
       body: new Column(
         children: <Widget>[
-          new Column(children: <Widget>[
-            new Padding(
-                padding: EdgeInsets.all(20),
-                child: new TextFormField(
-                  controller: itemControllerFechaBusqueda,
-                  autofocus: false,
-                  focusNode: _focusNodeFechaBuscar,
-                  textAlign: TextAlign.center,
-                  decoration: new InputDecoration(
-                    fillColor: Colors.green[100],
-                    filled: true,
-                    contentPadding: EdgeInsets.all(10),
-                    icon: new Icon(
-                      Icons.search,
-                      color: Colors.green,
-                      size: 30,
+          new Padding(
+              padding: EdgeInsets.only(top: 15, bottom: 5),
+              child: new Container(
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: <Widget>[
+                    new IconButton(
+                      onPressed: () {
+                        buscarDiaAtras();
+                      },
+                      icon: Icon(Icons.arrow_back_ios, size: 28, color: Colors.grey[600]),
+                      padding: EdgeInsets.only(left: 15,right:25),
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius:
+                    new Flexible(child:  new TextFormField(
+                      controller: itemControllerFechaBusqueda,
+                      autofocus: false,
+                      focusNode: _focusNodeFechaBuscar,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          fontSize: 20,
+                      ),
+                      decoration: new InputDecoration(
+                        fillColor: Colors.green[100],
+                        filled: true,
+                        contentPadding: EdgeInsets.all(10),
+                        border: OutlineInputBorder(
+                          borderRadius:
                           const BorderRadius.all(Radius.circular(10.0)),
+                        ),
+                      ),
+                    ),),
+                    new IconButton(
+                      onPressed: (){
+                          buscarDiaAdelante();
+                      },
+                      icon: Icon(Icons.arrow_forward_ios, size: 28, color: Colors.grey[600]),
+                      padding: EdgeInsets.only(left: 25,right:15),
                     ),
-                  ),
-                )),
-          ]),
+                  ],
+                ),
+              ),
+          ),
           new SizedBox(
             height: 10,
           ),
@@ -361,6 +454,7 @@ class _HomeState extends State<Home> {
   void volverPrincipal(_) {
       Navigator.pop(context);
   }
+
 
   void botonVolverCreacion(_) {
     itemControllerObjetivo.clear();

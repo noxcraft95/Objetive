@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ThreeObjective/models/nodo_item.dart';
 import 'package:ThreeObjective/utils/database_utils.dart';
 import 'package:ThreeObjective/utils/date_formatter.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 
 class Historico extends StatefulWidget {
   @override
@@ -26,46 +27,6 @@ class _HistoricoState extends State<Historico> {
   DateTime selectedDate = DateTime(DateTime.now().year);
   DateTime selectedDateHasta = DateTime.now();
 
-  Future<Null> _selectorFechaDesde(BuildContext context) async {
-    if (_focusNodeFechaDesde.hasFocus) {
-      final DateTime picked = await showDatePicker(
-          context: context,
-          initialDate: selectedDate,
-          firstDate: DateTime(DateTime.now().year - 5),
-          lastDate: DateTime(DateTime.now().year + 5));
-      _focusNodeFechaDesde.unfocus();
-      setState(() {
-        if (picked != null) {
-          selectedDate = picked;
-          itemControllerFecha.text = parseFecha(selectedDate);
-        }
-      });
-    }
-  }
-
-  //DatePickerBuscar
-  Future<Null> _selectorFechaBuscar(BuildContext context) async {
-    if (_focusNodeFechaHasta.hasFocus) {
-      final DateTime picked = await showDatePicker(
-          context: context,
-          initialDate: selectedDateHasta,
-          firstDate: DateTime(DateTime
-              .now()
-              .year - 5),
-          lastDate: DateTime(DateTime
-              .now()
-              .year + 5));
-      _focusNodeFechaHasta.unfocus();
-      if (picked != null)
-        setState(() {
-          //Cargamos la fecha actual en la de crear objetivo
-          itemControllerFechaHasta.text = parseFecha(picked);
-          selectedDateHasta = picked;
-          _readItems();
-        });
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -75,13 +36,54 @@ class _HistoricoState extends State<Historico> {
 
     if (!_focusNodeFechaDesde.hasListeners) {
       _focusNodeFechaDesde.addListener(() {
-        _selectorFechaDesde(context);
+        abrirDatePickerDesde();
       });
     }
     if (!_focusNodeFechaHasta.hasListeners) {
       _focusNodeFechaHasta.addListener(() {
-        _selectorFechaBuscar(context);
+        abrirDatePickerHasta();
       });
+    }
+  }
+
+  void abrirDatePickerDesde(){
+    if(_focusNodeFechaDesde.hasFocus) {
+      _focusNodeFechaDesde.unfocus();
+      DatePicker.showDatePicker(context, showTitleActions: true,
+          onChanged: (date) {
+            print('change $date');
+          },
+          onConfirm: (date) {
+            print('confirm $date');
+            setState(() {
+              selectedDate = date;
+              itemControllerFecha.text = parseFecha(selectedDate);
+              _readItems();
+            });
+          },
+          currentTime: DateTime.now(),
+          locale: LocaleType.es);
+    }
+  }
+
+  void abrirDatePickerHasta(){
+    if(_focusNodeFechaHasta.hasFocus) {
+      _focusNodeFechaHasta.unfocus();
+      DatePicker.showDatePicker(context, showTitleActions: true,
+          onChanged: (date) {
+            print('change $date');
+          },
+          onConfirm: (date) {
+            print('confirm $date');
+            setState(() {
+              //Cargamos la fecha actual en la de crear objetivo
+              itemControllerFechaHasta.text = parseFecha(date);
+              selectedDateHasta = date;
+              _readItems();
+            });;
+          },
+          currentTime: DateTime.now(),
+          locale: LocaleType.es);
     }
   }
 
