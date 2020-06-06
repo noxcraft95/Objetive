@@ -58,6 +58,14 @@ android {
     buildTypes {
         release {
             signingConfig signingConfigs.release
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile(
+                    'proguard-android-optimize.txt'),
+                    // List additional ProGuard rules for the given build type here. By default,
+                    // Android Studio creates and includes an empty rules file for you (located
+                    // at the root directory of each module).
+                    'proguard-rules.pro'
+
         }
     }
 }
@@ -70,4 +78,10 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'com.android.support:support-v4:27.1.0'
+    }
 }

@@ -141,7 +141,6 @@ class _HomeState extends State<Home> {
   }
 
    void buscarDiaAtras(){
-    print("pacoatras");
     selectedDateBuscar = selectedDateBuscar.subtract(Duration(days: 1));
     itemControllerFecha.text = parseFecha(selectedDateBuscar);
     //Actualizamos la fecha de busqueda a la elegida
