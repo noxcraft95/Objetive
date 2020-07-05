@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -6,9 +10,14 @@ import 'package:ThreeObjective/utils/database_utils.dart';
 import 'package:ThreeObjective/utils/date_formatter.dart';
 import 'package:ThreeObjective/ver_objetivo.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:flutter_full_pdf_viewer/full_pdf_viewer_scaffold.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+
+const String _documentPath = 'PDFs/GuiaObjective.pdf';
 
 class Home extends StatefulWidget {
   @override
@@ -170,18 +179,31 @@ class _HomeState extends State<Home> {
         actions: <Widget>[
           // action button
             IconButton(
-              icon: new Icon(Icons.date_range,color: Colors.green,size: 36,),
+              icon: new Icon(Icons.date_range,color: Colors.green,size: 32,),
               onPressed: () {
                 Navigator.pushNamed(context, '/historico');
               },
-              padding: EdgeInsets.only(right: 20),
+              padding: EdgeInsets.only(right: 25,left: 40),
             ),
           IconButton(
-            icon: new Icon(Icons.notifications,color: Colors.orange,size: 36,),
+            icon: new Icon(Icons.notifications,color: Colors.orange,size: 32,),
             onPressed: () {
               Navigator.pushNamed(context, '/notificacion');
             },
-            padding: EdgeInsets.only(right: 60),
+            padding: EdgeInsets.only(right: 25),
+          ),
+          IconButton(
+            icon: new Icon(Icons.help,color: Colors.orange,size: 32,),
+            onPressed: () {
+              prepareTestPdf().then((path) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => FullPdfViewerScreen(path)),
+                );
+              });
+            },
+            padding: EdgeInsets.only(right: 25),
           ),
         ],
 
@@ -304,7 +326,7 @@ class _HomeState extends State<Home> {
                       padding: EdgeInsets.only(right: 50, left: 50, bottom: 50),
                       child: Column(
                         children: <Widget>[
-                          Text(
+                          AutoSizeText(
                             "No hay objetivos para este día",
                             style: TextStyle(
                                 height: 3,
@@ -526,4 +548,32 @@ class _HomeState extends State<Home> {
     });
   }
 
+  Future<String> prepareTestPdf() async {
+    final ByteData bytes =
+    await DefaultAssetBundle.of(context).load(_documentPath);
+    final Uint8List list = bytes.buffer.asUint8List();
+
+    final tempDir = await getTemporaryDirectory();
+    final tempDocumentPath = '${tempDir.path}/$_documentPath';
+
+    final file = await File(tempDocumentPath).create(recursive: true);
+    file.writeAsBytesSync(list);
+    return tempDocumentPath;
+  }
+
+}
+
+class FullPdfViewerScreen extends StatelessWidget {
+  final String pdfPath;
+
+  FullPdfViewerScreen(this.pdfPath);
+
+  @override
+  Widget build(BuildContext context) {
+    return PDFViewerScaffold(
+        appBar: AppBar(
+          title: Text("Manual de uso"),
+        ),
+        path: pdfPath);
+  }
 }
