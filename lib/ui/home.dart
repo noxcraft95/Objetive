@@ -11,7 +11,6 @@ import 'package:ThreeObjective/utils/date_formatter.dart';
 import 'package:ThreeObjective/ver_objetivo.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_full_pdf_viewer/full_pdf_viewer_scaffold.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -39,8 +38,6 @@ class _HomeState extends State<Home> {
   var db = new DatabaseHelper();
   final List<ItemObjetivo> itemList = <ItemObjetivo>[];
 
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
-
   //DatePicker
   final FocusNode _focusNodeFecha = FocusNode();
   final FocusNode _focusNodeFechaBuscar = FocusNode();
@@ -48,20 +45,6 @@ class _HomeState extends State<Home> {
   //DatePickerCrear
   DateTime selectedDate = DateTime.now();
   DateTime selectedDateBuscar = DateTime.now();
-
-  Future scheuleAtParticularTime(DateTime timee) async {
-    var time = Time(timee.hour, timee.minute, timee.second);
-    print(time.toString());
-    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-        'repeatDailyAtTime channel id',
-        'repeatDailyAtTime channel name',
-        'repeatDailyAtTime description');
-    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-    var platformChannelSpecifics = new NotificationDetails(
-        androidPlatformChannelSpecifics, iOSPlatformChannelSpecifics);
-    flutterLocalNotificationsPlugin.showDailyAtTime(0, 'ThreeObjective',
-        'Recuerda dedicarle un tiempo a tus objetivos.', time, platformChannelSpecifics);
-  }
 
   Future<String>_obtenerEstado() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -88,25 +71,6 @@ class _HomeState extends State<Home> {
       });
     }
 
-    //Comprobamos si es la primera vez que se hace las notificaciones para activarlas por defecto
-    _obtenerEstado().then((value){
-        if((value == null || value == "null")){
-          var initializationSettingsAndroid =
-          new AndroidInitializationSettings('@mipmap/ic_launcher');
-          var initializationSettingsIOS = new IOSInitializationSettings();
-          var initializationSettings = new InitializationSettings(
-              initializationSettingsAndroid, initializationSettingsIOS);
-
-          flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
-          flutterLocalNotificationsPlugin.initialize(initializationSettings);
-          //Se establece las 17:0:0 por defecto.
-          DateTime date = DateTime(2020, 6, 4, 17, 0, 0);
-          print("activamos notificaciones por primera instancia: $date");
-          scheuleAtParticularTime(
-              DateTime.fromMillisecondsSinceEpoch(
-                  date.millisecondsSinceEpoch));
-        }
-      });
 }
 
 
@@ -186,13 +150,6 @@ class _HomeState extends State<Home> {
               padding: EdgeInsets.only(right: 25,left: 40),
             ),
           IconButton(
-            icon: new Icon(Icons.notifications,color: Colors.orange,size: 32,),
-            onPressed: () {
-              Navigator.pushNamed(context, '/notificacion');
-            },
-            padding: EdgeInsets.only(right: 25),
-          ),
-          IconButton(
             icon: new Icon(Icons.help,color: Colors.orange,size: 32,),
             onPressed: () {
               prepareTestPdf().then((path) {
@@ -206,7 +163,6 @@ class _HomeState extends State<Home> {
             padding: EdgeInsets.only(right: 25),
           ),
         ],
-
 
         flexibleSpace: Container(
           decoration: new BoxDecoration(
